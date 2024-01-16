@@ -46,6 +46,8 @@ import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import logging
+
 from src.models.model_config import ModelConfig
 from src.tools.ulog_tools import load_ulog, pandas_from_topic
 from src.tools.dataframe_tools import compute_flight_time, resample_dataframe_list
@@ -60,13 +62,13 @@ class DataHandler(object):
     }
 
     def __init__(self, config_file, selection_var="none"):
-        print(
+        logging.info(
             "==============================================================================="
         )
-        print(
+        logging.info(
             "                              Data Processing                                  "
         )
-        print(
+        logging.info(
             "==============================================================================="
         )
         self.config = ModelConfig(config_file)
@@ -79,9 +81,8 @@ class DataHandler(object):
         self.estimate_angular_acceleration = config_dict[
             "estimate_angular_acceleration"
         ]
-        print("Resample frequency: ", self.resample_freq, "Hz")
+        logging.info("Resample frequency: ", self.resample_freq, "Hz")
         self.req_topics_dict = config_dict["data"]["required_ulog_topics"]
-
         if selection_var != "none":
             split = selection_var.split("/")
             assert (
@@ -117,7 +118,7 @@ class DataHandler(object):
                     "dataframe_name": ["timestamp", variable_name],
                 }
 
-            print(
+            logging.info(
                 "Augmented required topics list with setpoint variable:",
                 variable_name,
                 "from topic",
@@ -146,9 +147,9 @@ class DataHandler(object):
 
     def loadLogFile(self, rel_data_path):
         if rel_data_path.endswith(".csv"):
-            print("Loading CSV file: ", rel_data_path)
+            logging.info("Loading CSV file: ", rel_data_path)
             self.data_df = pd.read_csv(rel_data_path, index_col=0)
-            print("Loading topics: ", self.req_dataframe_topic_list)
+            logging.info("Loading topics: ", self.req_dataframe_topic_list)
             for req_topic in self.req_dataframe_topic_list:
                 assert req_topic in self.data_df, "missing topic in loaded csv: " + str(
                     req_topic
@@ -156,11 +157,11 @@ class DataHandler(object):
             return True
 
         elif rel_data_path.endswith(".ulg"):
-            print("Loading uLog file: ", rel_data_path)
+            logging.info("Loading uLog file: ", rel_data_path)
             ulog = load_ulog(rel_data_path)
-            print("Loading topics:")
+            logging.info("Loading topics:")
             for req_topic in self.req_topics_dict:
-                print(req_topic)
+                logging.info(req_topic)
             self.check_ulog_for_req_topics(ulog)
 
             # compute flight time based on the landed topic
@@ -193,6 +194,7 @@ class DataHandler(object):
                     topic_type_data = ulog.get_dataset(topic_type)
             except:
                 print("Missing topic type: ", topic_type)
+                logging.info("Missing topic type: ", topic_type)
                 exit(1)
             topic_type_data = topic_type_data.data
             ulog_topic_list = self.req_topics_dict[topic_type]["ulog_name"]
@@ -201,15 +203,15 @@ class DataHandler(object):
                     topic = ulog_topic_list[topic_index]
                     topic_data = topic_type_data[topic]
                 except:
-                    print("Missing topic: ", topic_type, ulog_topic_list[topic_index])
+                    logging.info("Missing topic: ", topic_type, ulog_topic_list[topic_index])
                     exit(1)
         return
 
     def compute_resampled_dataframe(self, ulog, fts):
-        print("Starting data resampling of topic types: ", self.req_topics_dict.keys())
+        logging.info("Starting data resampling of topic types: ", self.req_topics_dict.keys())
         # setup object to crop dataframes for flight data
         df_list = []
-        topic_type_bar = Bar("Resampling", max=len(self.req_topics_dict.keys()))
+        # topic_type_bar = Bar("Resampling", max=len(self.req_topics_dict.keys()))
 
         # getting data
         for topic_type in self.req_topics_dict.keys():
@@ -231,7 +233,7 @@ class DataHandler(object):
                     "due to rename list not having an entry for every topic.",
                 )
                 curr_df.columns = topic_dict["dataframe_name"]
-            topic_type_bar.next()
+            # topic_type_bar.next()
             if (
                 topic_type == "vehicle_angular_velocity"
                 and self.estimate_angular_acceleration
@@ -242,16 +244,16 @@ class DataHandler(object):
                 time_in_secods_np = curr_df[["timestamp"]].to_numpy() / 1000000
                 time_in_secods_np = time_in_secods_np.flatten()
                 ang_acc_np = np.gradient(ang_vel_mat, time_in_secods_np, axis=0)
-                topic_type_bar.next()
+                # topic_type_bar.next()
                 curr_df[["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"]] = ang_acc_np
 
             df_list.append(curr_df)
 
-        topic_type_bar.finish()
+        # topic_type_bar.finish()
 
         # Check if actuator topics are empty
         if not fts:
-            print("could not select flight time due to missing actuator topic")
+            logging.info("could not select flight time due to missing actuator topic")
             exit(1)
 
         if isinstance(fts, list):
@@ -284,24 +286,24 @@ class DataHandler(object):
             time_in_secods_np = resampled_df[["timestamp"]].to_numpy() / 1000000
             time_in_secods_np = time_in_secods_np.flatten()
             ang_acc_np = np.gradient(ang_vel_mat, time_in_secods_np, axis=0)
-            topic_type_bar.next()
+            # topic_type_bar.next()
             resampled_df[["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"]] = ang_acc_np
 
         return resampled_df.dropna()
 
     def visually_select_data(self, plot_config_dict=None):
-        print(
+        logging.info(
             "==============================================================================="
         )
-        print(
+        logging.info(
             "                           Data Selection Enabled                              "
         )
-        print(
+        logging.info(
             "==============================================================================="
         )
         from visual_dataframe_selector.data_selector import select_visual_data
 
-        print("Number of data samples before cropping: ", self.data_df.shape[0])
+        logging.info("Number of data samples before cropping: ", self.data_df.shape[0])
         self.data_df = select_visual_data(
             self.data_df, self.visual_dataframe_selector_config_dict
         )

@@ -97,16 +97,17 @@ def plot_moment_predictions(
     fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
     fig.suptitle("Prediction of Moments in Body Frame [Nm]")
     ax1.plot(timestamp_array, acc_mat[:, 0], label="measurement")
-    ax1.plot(timestamp_array, acc_mat_pred[:, 0], label="prediction")
-    ax2.plot(timestamp_array, acc_mat[:, 1], label="measurement")
-    ax2.plot(timestamp_array, acc_mat_pred[:, 1], label="prediction")
-    ax3.plot(timestamp_array, acc_mat[:, 2], label="measurement")
-    ax3.plot(timestamp_array, acc_mat_pred[:, 2], label="prediction")
+    ax1.plot(timestamp_array, acc_mat_pred[:, 0], label="prediction", alpha=0.7)
+    # ax2.plot(timestamp_array, acc_mat[:, 1], label="measurement")
+    # ax2.plot(timestamp_array, acc_mat_pred[:, 1], label="prediction")
+    # ax3.plot(timestamp_array, acc_mat[:, 2], label="measurement")
+    # ax3.plot(timestamp_array, acc_mat_pred[:, 2], label="prediction")
 
     ax1.set_ylabel("$x$")
-    ax2.set_ylabel("$y$")
-    ax3.set_ylabel("$z$")
-    ax3.set_xlabel("time [s]")
+    ax1.set_xlabel("time [s]")
+    # ax2.set_ylabel("$y$")
+    # ax3.set_ylabel("$z$")
+    # ax3.set_xlabel("time [s]")
     plt.legend()
     return
 
@@ -133,6 +134,7 @@ def plot_airspeed_and_AoA(airspeed_mat, timestamp_array):
     ax3.set_title(r"Airspeed in body-$z$ [m/s^2]")
     ax4.set_title("AoA in body frame [radians]")
     plt.legend()
+
     return
 
 

@@ -39,7 +39,7 @@ __license__ = "BSD 3"
 import os
 import yaml
 from pathlib import Path
-
+import logging
 
 class ModelConfig:
     def __init__(self, config_file_name):
@@ -56,8 +56,8 @@ class ModelConfig:
                 assert type(config_dict) is dict
 
         except:
-            print("Could not load yaml config file. Does the specified file exist?")
-            print(log_file_path)
+            logging.info("Could not load yaml config file. Does the specified file exist?")
+            logging.info(log_file_path)
             exit(1)
 
         self.model_name = config_dict["model_name"]
@@ -74,7 +74,7 @@ class ModelConfig:
         self.extractor_class = config_dict["extractor_class"]
         self.extractor_config = config_dict["extractor_config"]
 
-        print("Initializing of configuration successful. ")
+        logging.info("Initializing of configuration successful. ")
 
         return
 
@@ -125,7 +125,7 @@ class ModelConfig:
         ), "required_ulog_topics does not contain a dict of topic types"
         for topic_type in data_dict["required_ulog_topics"]:
             topic_type_dict = data_dict["required_ulog_topics"][topic_type]
-            assert "ulog_name" in topic_type_dict, print(
+            assert "ulog_name" in topic_type_dict, logging.info(
                 topic_type, " does not contain an entry for ulog_name"
             )
         return

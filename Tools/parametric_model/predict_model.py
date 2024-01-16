@@ -11,6 +11,7 @@ import src.models as models
 from src.tools import DataHandler
 import argparse
 import yaml
+import logging
 
 
 def str2bool(v):
@@ -28,7 +29,7 @@ def str2bool(v):
 
 def start_model_prediction(config, model_results, log_path, data_selection=False):
     data_selection_enabled = data_selection
-    print("Visual Data selection enabled: ", data_selection_enabled)
+    logging.info("Visual Data selection enabled: ", data_selection_enabled)
 
     try:
         with open(model_results) as file:
@@ -39,8 +40,8 @@ def start_model_prediction(config, model_results, log_path, data_selection=False
             opt_coefs_dict = model_results_dict["coefficients"]
 
     except:
-        print("Could not load yaml model results file. Does the specified file exist?")
-        print(model_results)
+        logging.info("Could not load yaml model results file. Does the specified file exist?")
+        logging.info(model_results)
         exit(1)
 
     data_handler = DataHandler(config)
@@ -48,7 +49,7 @@ def start_model_prediction(config, model_results, log_path, data_selection=False
 
     if data_selection_enabled:
         data_handler.visually_select_data()
-    data_handler.visualize_data()
+    #data_handler.visualize_data()
 
     data_df = data_handler.get_dataframes()
 
@@ -67,11 +68,12 @@ def start_model_prediction(config, model_results, log_path, data_selection=False
 
     model.load_dataframes(data_df)
     model.predict_model(opt_coefs_dict)
-    model.compute_residuals()
+    #model.compute_residuals()
     model.plot_model_predicitons()
+    
+    acc_mat, acc_amt_pred = model.SYSID_get_data_acceleration()
 
-    return
-
+    return acc_mat, acc_amt_pred
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

@@ -72,6 +72,7 @@ def plot_sym_sigmoid(scale_fac, x_offset=0.35, x_range=90):
     plt.show()
 
 
+
 def rmse_between_numpy_arrays(np_array1, np_array2):
     difference_array = np.subtract(np_array1.flatten(), np_array2.flatten())
     squared_array = np.square(difference_array)

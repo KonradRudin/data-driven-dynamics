@@ -41,7 +41,7 @@ import pandas as pd
 from src.tools.ulog_tools import pandas_from_topic
 from src.tools.quat_utils import slerp
 from matplotlib import pyplot as plt
-
+import logging
 
 def compute_flight_time(data_df):
     """
@@ -53,7 +53,7 @@ def compute_flight_time(data_df):
     - Even number of groups with landed = 1: An array with start and end time of each detected flight segment will be returned. If multiple flight segments were detected, a warning is issued.
     - Odd number of groups with landed = 1: An array with start and end time of each detected flight segment will be returned. If multiple flight segments were detected, a warning is issued.
     """
-    print("\nComputing flight time...")
+    logging.info("\nComputing flight time...")
     landed_groups = data_df.groupby(
         (data_df["landed"].shift() != data_df["landed"]).cumsum()
     )
@@ -62,7 +62,7 @@ def compute_flight_time(data_df):
     # single group detected - flight either started and ended outside of log of aircraft did not fly at all
     if num_of_groups == 1:
         if landed_groups.get_group(1)["landed"].iloc[0] == 1:
-            print("No flight detected. Please check the landed state.")
+            logging.info("No flight detected. Please check the landed state.")
             return [{"t_start": 0, "t_end": 0}]
         else:
             pass
@@ -70,11 +70,11 @@ def compute_flight_time(data_df):
     # multiple groups detected - flight started and/or ended within the flight log duration
     else:
         if num_of_groups % 2 == 1 and num_of_groups > 3:
-            print(
+            logging.info(
                 "WARNING: More than one flight detected. The start and end times of the individual segments will be returned."
             )
         if num_of_groups % 2 == 0 and num_of_groups > 2:
-            print(
+            logging.info(
                 "WARNING: More than one flight detected. The start and end times of the individual segments will be returned."
             )
 
@@ -97,7 +97,7 @@ def compute_flight_time(data_df):
 
         return flight_times
 
-    print("Flight time computation completed successfully.")
+    logging.info("Flight time computation completed successfully.")
     return [{"t_start": act_df.iloc[0, 0], "t_end": act_df.iloc[-1, 0]}]
 
 

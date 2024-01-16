@@ -41,6 +41,7 @@ import pandas as pd
 import math
 from progress.bar import Bar
 import copy
+import logging
 
 
 class RotorModel:
@@ -231,7 +232,7 @@ class RotorModel:
         return X_moments
 
     def compute_actuator_force_matrix(self):
-        print("Computing force features for rotor:", self.rotor_name)
+        logging.info("Computing force features for rotor:", self.rotor_name)
         c = self.air_density * self.prop_diameter**3
         X_drag = -(
             np.array(self.v_airspeed_perpendicular_to_rotor_axis).T
@@ -302,7 +303,7 @@ class RotorModel:
         return self.X_forces, coef_dict, col_names
 
     def compute_actuator_moment_matrix(self):
-        print("Computing moment features for rotor:", self.rotor_name)
+        logging.info("Computing moment features for rotor:", self.rotor_name)
         if hasattr(self, "rotor_axis_mat"):
             leaver_moment_vec = 0
         else:

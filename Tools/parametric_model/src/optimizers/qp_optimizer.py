@@ -44,15 +44,16 @@ import warnings
 from src.tools import math_tools
 from sklearn.metrics import r2_score
 
+import logging
 
 class QPOptimizer(OptimizerBaseTemplate):
     def __init__(self, optimizer_config, param_name_list, verbose=False):
         super(QPOptimizer, self).__init__(optimizer_config, param_name_list)
-        print("Define and solve problem:")
-        print("min_c (X * c -y)^T * (X * c -y)")
-        print(" s.t. G * c <= h")
-        print("Initialized with the following coefficients: ")
-        print(param_name_list)
+        logging.info("Define and solve problem:")
+        logging.info("min_c (X * c -y)^T * (X * c -y)")
+        logging.info(" s.t. G * c <= h")
+        logging.info("Initialized with the following coefficients: ")
+        logging.info(param_name_list)
         self.verbose = verbose
         self.n = len(param_name_list)
         self.param_name_list = param_name_list
@@ -83,7 +84,7 @@ class QPOptimizer(OptimizerBaseTemplate):
             try:
                 current_bnd_tuple = param_bounds[current_param]
             except IndexError:
-                print(
+                logging.info(
                     "Can not find bounds for parameter "
                     + current_param
                     + " in config file."
@@ -106,27 +107,27 @@ class QPOptimizer(OptimizerBaseTemplate):
             reversed_index = self.n_fixed_coef - i - 1
             self.G = np.delete(self.G, self.fixed_coef_index_list[reversed_index], 1)
 
-        print("Fixed Coefficients: Value")
+        logging.info("Fixed Coefficients: Value")
         for fixed_coef in self.fixed_coef_list:
-            print(fixed_coef + ": ", param_bounds[fixed_coef][0])
-        print(
+            logging.info(fixed_coef + ": ", param_bounds[fixed_coef][0])
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print("Bounded Coefficients: (Min Value, Max Value)")
+        logging.info("Bounded Coefficients: (Min Value, Max Value)")
         for opt_coef in self.optimization_coef_list:
-            print(opt_coef + ": ", param_bounds[opt_coef])
+            logging.info(opt_coef + ": ", param_bounds[opt_coef])
         if self.verbose:
-            print(
+            logging.info(
                 "-------------------------------------------------------------------------------"
             )
-            print(
+            logging.info(
                 "                           Constraints matrices                                "
             )
-            print(
+            logging.info(
                 "-------------------------------------------------------------------------------"
             )
-            print(self.G)
-            print(self.h)
+            logging.info(self.G)
+            logging.info(self.h)
 
     def index_row(self, i):
         index_row = np.zeros(self.n)
@@ -138,10 +139,10 @@ class QPOptimizer(OptimizerBaseTemplate):
         for i in range(self.n_fixed_coef):
             reversed_index = self.n_fixed_coef - i - 1
             coef_index = self.fixed_coef_index_list[reversed_index]
-            print(self.fixed_coef_index_list)
-            print(coef_index)
-            print(self.n)
-            print(X.shape)
+            logging.info(self.fixed_coef_index_list)
+            logging.info(coef_index)
+            logging.info(self.n)
+            logging.info(X.shape)
             y = (
                 y
                 - (
@@ -152,7 +153,7 @@ class QPOptimizer(OptimizerBaseTemplate):
         return X, y
 
     def insert_fixed_coefs(self, c_opt):
-        print(c_opt)
+        logging.info(c_opt)
         c_opt = list(c_opt)
         for i in range(len(self.fixed_coef_index_list)):
             c_opt.insert(self.fixed_coef_index_list[i], self.fixed_coef_value_list[i])

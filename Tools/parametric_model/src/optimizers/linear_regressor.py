@@ -39,6 +39,7 @@ __license__ = "BSD 3"
 from src.optimizers import OptimizerBaseTemplate
 from sklearn.linear_model import LinearRegression
 from src.tools import math_tools
+import numpy as np
 
 
 class LinearRegressor(OptimizerBaseTemplate):
@@ -63,7 +64,7 @@ class LinearRegressor(OptimizerBaseTemplate):
     def set_optimal_coefficients(self, c_opt, X, y):
         self.X = X
         self.y = y
-        self.reg.coef_ = c_opt
+        self.reg.coef_ = np.array(c_opt)
         self.estimation_completed = True
 
     def predict(self, X_pred):

@@ -43,7 +43,10 @@ from src.tools import DataHandler, string_to_bool
 import argparse
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import logging
 
+from sklearn.preprocessing import MinMaxScaler
 
 def start_model_estimation(
     config,
@@ -58,6 +61,11 @@ def start_model_estimation(
     data_handler = DataHandler(config, selection_var)
     data_handler.loadLogs(log_path)
     data_df = data_handler.get_dataframes()
+    
+    # Normalize each column in the DataFrame
+    # scaler = MinMaxScaler()
+    # data_df = pd.DataFrame(scaler.fit_transform(data_df), columns=data_df.columns)
+
     model_class = data_handler.config.model_class
 
     try:
@@ -147,9 +155,10 @@ def start_model_estimation(
 
     elif data_selection == "auto":  # Automatic data selection (WIP)
         print("Automatic data selection enabled...")
-        from active_dataframe_selector.automatic_data_selector import (
-            AutomaticDataSelector,
-        )
+        from src.tools.automatic_data_selector import (AutomaticDataSelector,)
+        # from active_dataframe_selector.automatic_data_selector import (
+        #     AutomaticDataSelector,
+        # )
 
         # The goal is to identify automatically the most relevant parts of a log.
         # Currently the draft is designed to choose the most informative 10% of the logs with regards to
@@ -191,10 +200,10 @@ def start_model_estimation(
         extractor.save_px4_params_to_yaml("model_results/")
 
     if plot:
-        model.compute_residuals()
+        # model.compute_residuals()
         model.plot_model_predicitons()
-
-    return
+    
+    return 
 
 
 if __name__ == "__main__":

@@ -59,6 +59,8 @@ import math
 import pandas as pd
 from progress.bar import Bar
 
+import logging
+
 """ The model class contains properties shared between all models and shgall simplyfy automated checks and the later
 export to a sitl gazebo model by providing a unified interface for all models. """
 
@@ -140,7 +142,7 @@ class DynamicsModel:
             for m in measurements:
                 if m in self.coef_dict[i]:
                     coef_list.append(i)
-
+                    
         X = np.zeros((len(measurements) * self.n_samples * 3, len(coef_list)))
         for coef_index, coef in enumerate(coef_list):
             for i_index, i in enumerate(measurements):
@@ -151,7 +153,7 @@ class DynamicsModel:
                         X[pos : pos + self.n_samples, coef_index] = self.data_df[key]
                     except:
                         KeyError
-
+    
         return X, y, coef_list
 
     def get_topic_list_from_topic_type(self, topic_type):
@@ -250,8 +252,8 @@ class DynamicsModel:
                             / (self.max_output - self.min_output)
                         )
             else:
-                print("actuator type unknown:", self.actuator_type[i])
-                print("normalization failed")
+                logging.info("actuator type unknown:", self.actuator_type[i])
+                logging.info("normalization failed")
                 exit(1)
             self.data_df[self.actuator_columns[i]] = actuator_data
 
@@ -268,8 +270,8 @@ class DynamicsModel:
         if "rotor_type" not in rotor_config_dict.keys():
             # Set default rotor model
             rotor_type = "RotorModel"
-            print("no Rotor model specified for ", rotor_input_name)
-            print("Selecting default: RotorModel")
+            logging.info("no Rotor model specified for ", rotor_input_name)
+            logging.info("Selecting default: RotorModel")
         else:
             rotor_type = rotor_config_dict["rotor_type"]
 
@@ -307,9 +309,9 @@ class DynamicsModel:
                 angular_vel_mat=angular_vel_mat,
             )
         else:
-            print(rotor_type, " is not a valid rotor model.")
-            print("Valid rotor models are: ", valid_rotor_types)
-            print("Adapt your config file to a valid rotor model!")
+            logging.info(rotor_type, " is not a valid rotor model.")
+            logging.info("Valid rotor models are: ", valid_rotor_types)
+            logging.info("Adapt your config file to a valid rotor model!")
             exit(1)
 
         return rotor
@@ -445,7 +447,7 @@ class DynamicsModel:
     def save_result_dict_to_yaml(
         self,
         file_name="model_parameters",
-        result_path="model_results/",
+        result_path="/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/model_results_estimation_RollModel/",
         results_only=False,
     ):
         timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -455,12 +457,12 @@ class DynamicsModel:
             yaml.dump(self.result_dict, outfile, default_flow_style=False)
             if not results_only:
                 yaml.dump(self.fisher_metric, outfile, default_flow_style=False)
-        print(
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print("Complete results saved to: ")
-        print(file_path)
-        print(
+        logging.info("Complete results saved to: ")
+        logging.info(file_path)
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
 
@@ -469,21 +471,22 @@ class DynamicsModel:
         self.n_samples = self.data_df.shape[0]
         self.quaternion_df = self.data_df[["q0", "q1", "q2", "q3"]]
         self.q_mat = self.quaternion_df.to_numpy()
-        print(
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print("Initialized dataframe with the following columns: ")
-        print(list(self.data_df.columns))
-        print("Data contains ", self.n_samples, "timestamps.")
+        logging.info("Initialized dataframe with the following columns: ")
+        logging.info(list(self.data_df.columns))
+        #self.data_df.to_csv('Processed_data_ddd_test1.csv', index=False)
+        logging.info("Data contains ", self.n_samples, "timestamps.")
 
     def predict_model(self, opt_coefs_dict):
-        print(
+        logging.info(
             "==============================================================================="
         )
-        print(
+        logging.info(
             "                        Preparing Model Features                               "
         )
-        print(
+        logging.info(
             "==============================================================================="
         )
         self.prepare_regression_matrices()
@@ -506,13 +509,13 @@ class DynamicsModel:
         self.generate_prediction_results()
 
     def estimate_model(self):
-        print(
+        logging.info(
             "==============================================================================="
         )
-        print(
+        logging.info(
             "                        Preparing Model Features                               "
         )
-        print(
+        logging.info(
             "==============================================================================="
         )
         configuration = []
@@ -545,17 +548,17 @@ class DynamicsModel:
         return coef_dict
 
     def initialize_optimizer(self):
-        print(
+        logging.info(
             "==============================================================================="
         )
-        print(
+        logging.info(
             "                            Initialize Optimizer                               "
         )
-        print(
+        logging.info(
             "                                "
             + self.optimizer_config["optimizer_class"]
         )
-        print(
+        logging.info(
             "==============================================================================="
         )
 
@@ -572,13 +575,13 @@ class DynamicsModel:
             raise AttributeError(error_str)
 
     def generate_prediction_results(self):
-        print(
+        logging.info(
             "==============================================================================="
         )
-        print(
+        logging.info(
             "                            Prediction Results                                 "
         )
-        print(
+        logging.info(
             "==============================================================================="
         )
         metrics_dict = self.optimizer.compute_optimization_metrics()
@@ -588,33 +591,33 @@ class DynamicsModel:
         if hasattr(self, "aerodynamics_dict"):
             model_dict.update(self.aerodynamics_dict)
         self.generate_model_dict(coef_list, metrics_dict, model_dict)
-        print(
+        logging.info(
             "                           Optimal Coefficients                              "
         )
-        print(
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print(yaml.dump(self.result_dict["coefficients"], default_flow_style=False))
-        print(
+        logging.info(yaml.dump(self.result_dict["coefficients"], default_flow_style=False))
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print(
+        logging.info(
             "                             Prediction Metrics                                "
         )
-        print(
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print(yaml.dump(self.result_dict["metrics"], default_flow_style=False))
+        logging.info(yaml.dump(self.result_dict["metrics"], default_flow_style=False))
         self.save_result_dict_to_yaml(file_name=self.model_name, results_only=True)
 
     def generate_optimization_results(self):
-        print(
+        logging.info(
             "==============================================================================="
         )
-        print(
+        logging.info(
             "                           Optimization Results                                "
         )
-        print(
+        logging.info(
             "==============================================================================="
         )
         metrics_dict = self.optimizer.compute_optimization_metrics()
@@ -625,23 +628,23 @@ class DynamicsModel:
         if hasattr(self, "aerodynamics_dict"):
             model_dict.update(self.aerodynamics_dict)
         self.generate_model_dict(coef_list, metrics_dict, model_dict)
-        print(
+        logging.info(
             "                           Optimal Coefficients                              "
         )
-        print(
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print(yaml.dump(self.result_dict["coefficients"], default_flow_style=False))
-        print(
+        logging.info(yaml.dump(self.result_dict["coefficients"], default_flow_style=False))
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print(
+        logging.info(
             "                            Optimization Metrics                               "
         )
-        print(
+        logging.info(
             "-------------------------------------------------------------------------------"
         )
-        print(yaml.dump(self.result_dict["metrics"], default_flow_style=False))
+        logging.info(yaml.dump(self.result_dict["metrics"], default_flow_style=False))
         self.save_result_dict_to_yaml(file_name=self.model_name)
 
     def compute_residuals(self):
@@ -731,7 +734,7 @@ class DynamicsModel:
 
         y_pred = self.optimizer.predict(self.X)
 
-        fig = plt.figure("Residual Visualization")
+        #fig = plt.figure("Residual Visualization")
 
         model_plots.plot_airspeed_and_AoA(
             self.data_df[
@@ -765,24 +768,24 @@ class DynamicsModel:
                 y_forces_measured, y_forces_pred, self.data_df["timestamp"]
             )
 
-            ax1 = fig.add_subplot(2, 2, 1, projection="3d")
-            plot_scatter(
-                ax1,
-                "Residual forces [N]",
-                "residual_force_x",
-                "residual_force_y",
-                "residual_force_z",
-                "blue",
-            )
-            ax3 = fig.add_subplot(2, 2, 3, projection="3d")
-            plot_scatter(
-                ax3,
-                "Measured Forces [N]",
-                "measured_force_x",
-                "measured_force_y",
-                "measured_force_z",
-                "blue",
-            )
+            # ax1 = fig.add_subplot(2, 2, 1, projection="3d")
+            # plot_scatter(
+            #     ax1,
+            #     "Residual forces [N]",
+            #     "residual_force_x",
+            #     "residual_force_y",
+            #     "residual_force_z",
+            #     "blue",
+            # )
+            # ax3 = fig.add_subplot(2, 2, 3, projection="3d")
+            # plot_scatter(
+            #     ax3,
+            #     "Measured Forces [N]",
+            #     "measured_force_x",
+            #     "measured_force_y",
+            #     "measured_force_z",
+            #     "blue",
+            # )
 
         if self.estimate_moments:
             _, y_moments, _ = self.assemble_regression_matrices(["rot"])
@@ -797,39 +800,46 @@ class DynamicsModel:
             ]
 
             y_moments_pred = np.zeros(y_moments.shape)
-            y_moments_pred[0::3] = y_pred[
-                y_moments.shape[0] : int(4 * y_moments.shape[0] / 3)
-            ]
+            # y_moments_pred[0::3] = y_pred[
+            #     y_moments.shape[0] : int(4 * y_moments.shape[0] / 3)
+            # ]
+            # y_moments_pred[1::3] = y_pred[
+            #     int(4 * y_moments.shape[0] / 3) : int(5 * y_moments.shape[0] / 3)
+            # ]
+            # y_moments_pred[2::3] = y_pred[int(5 * y_moments.shape[0] / 3) :]
+            y_moments_pred[0::3] = y_pred[0 : int(y_moments.shape[0] / 3)]
             y_moments_pred[1::3] = y_pred[
-                int(4 * y_moments.shape[0] / 3) : int(5 * y_moments.shape[0] / 3)
+                int(y_moments.shape[0] / 3) : int(2 * y_moments.shape[0] / 3)
             ]
-            y_moments_pred[2::3] = y_pred[int(5 * y_moments.shape[0] / 3) :]
+            y_moments_pred[2::3] = y_pred[
+                int(2 * y_moments.shape[0] / 3) : y_moments.shape[0]
+            ]
 
             model_plots.plot_moment_predictions(
                 y_moments_measured, y_moments_pred, self.data_df["timestamp"]
             )
 
-            ax2 = fig.add_subplot(2, 2, 2, projection="3d")
+            # ax2 = fig.add_subplot(2, 2, 2, projection="3d")
 
-            plot_scatter(
-                ax2,
-                "Residual Moments [Nm]",
-                "residual_moment_x",
-                "residual_moment_y",
-                "residual_moment_z",
-                "blue",
-            )
+            # plot_scatter(
+            #     ax2,
+            #     "Residual Moments [Nm]",
+            #     "residual_moment_x",
+            #     "residual_moment_y",
+            #     "residual_moment_z",
+            #     "blue",
+            # )
 
-            ax4 = fig.add_subplot(2, 2, 4, projection="3d")
+            # ax4 = fig.add_subplot(2, 2, 4, projection="3d")
 
-            plot_scatter(
-                ax4,
-                "Measured Moments [Nm]",
-                "measured_moment_x",
-                "measured_moment_y",
-                "measured_moment_z",
-                "blue",
-            )
+            # plot_scatter(
+            #     ax4,
+            #     "Measured Moments [Nm]",
+            #     "measured_moment_x",
+            #     "measured_moment_y",
+            #     "measured_moment_z",
+            #     "blue",
+            # )
 
         linear_model_plots.plot_covariance_mat(self.X, self.coef_name_list)
 
@@ -841,6 +851,8 @@ class DynamicsModel:
             )
         plt.tight_layout()
         plt.show()
+
+
         return
 
     def compute_fisher_information(self):
@@ -918,9 +930,9 @@ class DynamicsModel:
 
             forces_dict = coef_force
             metric_dict = dict(zip(forces_dict, cramer_rao_bounds_f.tolist()))
-            print("Cramer-Rao Bounds for force parameters:")
+            logging.info("Cramer-Rao Bounds for force parameters:")
             for key, value in metric_dict.items():
-                print(key, "\t", value)
+                logging.info(key, "\t", value)
 
             self.cramer_rao_bounds_f = cramer_rao_bounds_f
             self.fisher_metric.update(metric_dict)
@@ -992,9 +1004,9 @@ class DynamicsModel:
             moments_dict = coef_moment
 
             metric_dict = dict(zip(moments_dict, cramer_rao_bounds_m.tolist()))
-            print("Cramer-Rao Bounds for moment parameters:")
+            logging.info("Cramer-Rao Bounds for moment parameters:")
             for key, value in metric_dict.items():
-                print(key, "\t", value)
+                logging.info(key, "\t", value)
 
             self.cramer_rao_bounds_m = cramer_rao_bounds_m
             self.fisher_metric.update(metric_dict)
@@ -1058,3 +1070,36 @@ class DynamicsModel:
             # max(np.abs(np.linalg.eigvals(fisher_information_matrix_f)))
             # fisher_information_m_mat[i]= min(np.abs(np.linalg.eigvals(fisher_information_matrix_m))) / \
             # max(np.abs(np.linalg.eigvals(fisher_information_matrix_m)))
+    
+    def SYSID_get_data_acceleration(self):
+
+        y_pred = self.optimizer.predict(self.X)
+
+        if self.estimate_forces:
+            _, y_forces, _ = self.assemble_regression_matrices(["lin"])
+
+            y_forces_measured = np.zeros(y_forces.shape)
+            y_forces_measured[0::3] = y_forces[0 : int(y_forces.shape[0] / 3)]
+            y_forces_measured[1::3] = y_forces[
+                int(y_forces.shape[0] / 3) : int(2 * y_forces.shape[0] / 3)
+            ]
+            y_forces_measured[2::3] = y_forces[
+                int(2 * y_forces.shape[0] / 3) : y_forces.shape[0]
+            ]
+
+            y_forces_pred = np.zeros(y_forces.shape)
+            y_forces_pred[0::3] = y_pred[0 : int(y_forces.shape[0] / 3)]
+            y_forces_pred[1::3] = y_pred[
+                int(y_forces.shape[0] / 3) : int(2 * y_forces.shape[0] / 3)
+            ]
+            y_forces_pred[2::3] = y_pred[
+                int(2 * y_forces.shape[0] / 3) : y_forces.shape[0]
+            ]
+
+            stacked_force_vec = np.array(y_forces_measured)
+            stacked_force_vec_pred = np.array(y_forces_pred)
+
+            acc_mat = stacked_force_vec.reshape((-1, 3))
+            acc_mat_pred = stacked_force_vec_pred.reshape((-1, 3))
+
+            return acc_mat, acc_mat_pred
