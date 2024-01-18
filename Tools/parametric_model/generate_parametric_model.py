@@ -89,14 +89,35 @@ def start_model_estimation(
         model.prepare_regression_matrices()
         model.compute_fisher_information()
         # Parse actuator topics, and remove the timestamp from it
-        actuator_topics = data_handler.config_dict["data"]["required_ulog_topics"][
-            "actuator_outputs"
+        # actuator_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+        #     "actuator_outputs"
+        # ]["dataframe_name"]
+        # actuator_topics.remove("timestamp")
+
+        # visual_dataframe_selector_config_dict = {
+        #     "x_axis_col": "timestamp",
+        #     "sub_plt1_data": ["q0", "q1", "q2", "q3"],
+        #     "sub_plt2_data": actuator_topics,
+        #     "sub_plt3_data": [],
+        # }
+        vehicle_angular_velocity_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+            "vehicle_angular_velocity"
         ]["dataframe_name"]
-        actuator_topics.remove("timestamp")
+        vehicle_torque_setpoint_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+            "vehicle_torque_setpoint"
+        ]["dataframe_name"]
+        vehicle_angular_velocity_topics.remove("timestamp")
+        vehicle_angular_velocity_topics.remove("ang_vel_y")
+        vehicle_angular_velocity_topics.remove("ang_vel_z")
+        vehicle_angular_velocity_topics.remove("ang_acc_b_y")
+        vehicle_angular_velocity_topics.remove("ang_acc_b_z")
+        vehicle_torque_setpoint_topics.remove("timestamp")
+        vehicle_torque_setpoint_topics.remove("elevator")
+        vehicle_torque_setpoint_topics.remove("rudder")
         visual_dataframe_selector_config_dict = {
             "x_axis_col": "timestamp",
-            "sub_plt1_data": ["q0", "q1", "q2", "q3"],
-            "sub_plt2_data": actuator_topics,
+            "sub_plt1_data": vehicle_torque_setpoint_topics,
+            "sub_plt2_data": vehicle_angular_velocity_topics,
             "sub_plt3_data": [],
         }
 

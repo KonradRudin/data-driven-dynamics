@@ -78,7 +78,7 @@ def plot_force_predictions(stacked_force_vec, stacked_force_vec_pred, timestamp_
 
 
 def plot_moment_predictions(
-    stacked_moment_vec, stacked_moment_vec_pred, timestamp_array
+    stacked_moment_vec, stacked_moment_vec_pred, timestamp_array, roll_rate, V_T, air_density, aileron_input
 ):
     """
     Input:
@@ -94,21 +94,39 @@ def plot_moment_predictions(
     acc_mat = stacked_moment_vec.reshape((-1, 3))
     acc_mat_pred = stacked_moment_vec_pred.reshape((-1, 3))
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
-    fig.suptitle("Prediction of Moments in Body Frame [Nm]")
-    ax1.plot(timestamp_array, acc_mat[:, 0], label="measurement")
-    ax1.plot(timestamp_array, acc_mat_pred[:, 0], label="prediction", alpha=0.7)
-    # ax2.plot(timestamp_array, acc_mat[:, 1], label="measurement")
-    # ax2.plot(timestamp_array, acc_mat_pred[:, 1], label="prediction")
-    # ax3.plot(timestamp_array, acc_mat[:, 2], label="measurement")
-    # ax3.plot(timestamp_array, acc_mat_pred[:, 2], label="prediction")
+    column_to_integrate = acc_mat_pred[:, 0]
 
-    ax1.set_ylabel("$x$")
+
+
+    fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
+    fig.suptitle("Roll model identifier")
+    # Roll Acceleration: Measurement vs Prediciton
+    ax1.plot(timestamp_array, acc_mat[:, 0], label="Measurement: Vehicle_angular_velocity_xyz[0]_derivative")
+    ax1.plot(timestamp_array, acc_mat_pred[:, 0], label="Prediction: Roll Rate Derivative", alpha=0.7)
+    ax1.legend()
+
+    # Roll Rate: Measurement vs Integrated Predicition
+    integrated_result = integrate_cum_trap(column_to_integrate, timestamp_array, roll_rate)
+    t_values, y_values = integration_RK45(column_to_integrate, timestamp_array, roll_rate)
+
+    # Cum_trap
+    ax2.plot(timestamp_array, roll_rate, label="Measurement: Roll Rate (vehicle_angular_velocity_xyz[0])")
+    ax2.plot(timestamp_array[:len(integrated_result)], integrated_result, label="Integrated prediction, Cum_Trap", alpha=0.7)
+    ax2.legend()
+    # RK45
+    ax3.plot(timestamp_array, roll_rate, label="Measurement: Roll Rate (vehicle_angular_velocity_xyz[0])")
+    ax3.plot(t_values, y_values, label="Integrated prediction, RK45", alpha=0.7)
+    ax3.legend()
+
+    ax1.set_ylabel("$p_{dot} [rad/s^2]$")
     ax1.set_xlabel("time [s]")
-    # ax2.set_ylabel("$y$")
-    # ax3.set_ylabel("$z$")
-    # ax3.set_xlabel("time [s]")
+    ax2.set_ylabel("$p [rad/s]$")
+    ax2.set_xlabel("time [s]")
+    ax3.set_ylabel("$p [rad/s]$")
+    ax3.set_xlabel("time [s]")
+    
     plt.legend()
+    plt.show()
     return
 
 
@@ -257,3 +275,67 @@ def plot_az_and_collective_input(
 def plot(data, timestamp, plt_title="No title"):
     plt.plot(timestamp, data)
     plt.title(plt_title)
+
+   
+
+
+
+
+# ====================== INTEGRATION METHODS =========================================================================================
+from scipy.integrate import cumtrapz
+def integrate_cum_trap(data, time, roll_rate):
+    # Ensure both data and time are numpy arrays
+    data = np.array(data)
+    time = np.array(time)
+
+    # Calculate time intervals from the timestamp array
+    time_intervals = np.diff(time, prepend=0)
+
+    # Perform cumulative trapezoidal integration
+    integrated_result = cumtrapz(data, x=time, dx=time_intervals, initial=roll_rate[0])
+
+    return integrated_result
+
+def manual_integration(roll_acc, time):
+    roll_rate = [0.0]  # Initialize the roll rate with 0.0
+
+    for id, acc in enumerate(roll_acc):
+        if id == 0:
+            continue
+        delta_t = time[id] - time[id-1]
+        delta_roll_rate = acc * delta_t
+        current_roll_rate = roll_rate[-1] + delta_roll_rate
+        roll_rate.append(current_roll_rate)
+
+    return roll_rate
+
+
+from scipy.integrate import RK45
+def integration_RK45(roll_acc_func, time, roll_rate):
+    # The right-hand side function (roll rate derivative)
+    def fun(t, y):
+        # Roll_acc_func, array containing roll accelerations over time
+        idx = np.searchsorted(time, t) - 1  # Find the index corresponding to the current time
+        return roll_acc_func[idx]
+
+    # Set initial conditions
+    t0 = time[0]
+    y0 = [roll_rate[0]]
+
+    # Create RK45 solver
+    solver = RK45(fun, t0, y0, t_bound=time[-1], vectorized=True)
+
+    # Arrays to store the results
+    t_values = [solver.t]
+    y_values = [solver.y[0]]
+
+    # Integrate using RK45
+    while solver.status == 'running':
+        solver.step()
+        t_values.append(solver.t)
+        y_values.append(solver.y[0])
+
+    return t_values, y_values
+
+
+

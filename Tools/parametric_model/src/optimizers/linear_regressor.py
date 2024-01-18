@@ -47,6 +47,7 @@ class LinearRegressor(OptimizerBaseTemplate):
         super(LinearRegressor, self).__init__(optimizer_config, param_name_list)
         print("Define and solve problem:")
         print("min_c (X * c -y)^T * (X * c -y)")
+        self.fit_intercept = False
         self.reg = LinearRegression(fit_intercept=False)
 
     def estimate_parameters(self, X, y):

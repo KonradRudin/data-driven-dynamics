@@ -94,15 +94,15 @@ class DynamicsModel:
 
     def prepare_regression_matrices(self):
         if "V_air_body_x" not in self.data_df:
-            if self.apply_normalization:
-                self.normalize_actuators()
+            # if self.apply_normalization:
+                # self.normalize_actuators()
             self.compute_airspeed_from_groundspeed(["vx", "vy", "vz"])
 
         # Rotor features
-        angular_vel_mat = self.data_df[
-            ["ang_vel_x", "ang_vel_y", "ang_vel_z"]
-        ].to_numpy()
-        self.compute_rotor_features(self.rotor_config_dict, angular_vel_mat)
+        # angular_vel_mat = self.data_df[
+        #     ["ang_vel_x", "ang_vel_y", "ang_vel_z"]
+        # ].to_numpy()
+        # self.compute_rotor_features(self.rotor_config_dict, angular_vel_mat)
 
         if self.estimate_forces and self.estimate_moments:
             self.prepare_force_regression_matrices()
@@ -587,7 +587,7 @@ class DynamicsModel:
         metrics_dict = self.optimizer.compute_optimization_metrics()
         coef_list = self.optimizer.get_optimization_parameters()
         model_dict = {}
-        model_dict.update(self.rotor_config_dict)
+        # model_dict.update(self.rotor_config_dict)
         if hasattr(self, "aerodynamics_dict"):
             model_dict.update(self.aerodynamics_dict)
         self.generate_model_dict(coef_list, metrics_dict, model_dict)
@@ -816,8 +816,9 @@ class DynamicsModel:
             ]
 
             model_plots.plot_moment_predictions(
-                y_moments_measured, y_moments_pred, self.data_df["timestamp"]
-            )
+                y_moments_measured, y_moments_pred, self.data_df["timestamp"], self.data_df['ang_vel_x'],
+                  self.data_df['true_airspeed_m_s'], self.data_df['rho'], self.data_df['aileron'])
+            
 
             # ax2 = fig.add_subplot(2, 2, 2, projection="3d")
 

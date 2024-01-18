@@ -42,6 +42,7 @@ from src.tools.ulog_tools import pandas_from_topic
 from src.tools.quat_utils import slerp
 from matplotlib import pyplot as plt
 import logging
+from scipy.signal import lfilter
 
 def compute_flight_time(data_df):
     """
@@ -112,7 +113,6 @@ def filter_df(data_df, w=11):
     for i in range(data_np.shape[1]):
         new_df[column_list[i]] = moving_average(data_np[:, i])
     return new_df
-
 
 def resample_dataframe_list(
     df_list, time_window=None, f_des=100.0, slerp_enabled=False, filter=True

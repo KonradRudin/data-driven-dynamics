@@ -65,7 +65,7 @@ class FixedWingRollModel(DynamicsModel):
 
         self.model_name = model_name
 
-        self.rotor_config_dict = self.config.model_config["actuators"]["rotors"]
+        # self.rotor_config_dict = self.config.model_config["actuators"]["rotors"]
         self.aerodynamics_dict = self.config.model_config["aerodynamics"]
 
         try:
@@ -93,7 +93,7 @@ class FixedWingRollModel(DynamicsModel):
         # ] = moment_mat
         self.data_df[
             ["measured_moment_x", "measured_moment_y", "measured_moment_z"]
-        ] = self.data_df[["ang_vel_x", "ang_vel_y","ang_vel_z"]]
+        ] = self.data_df[["ang_acc_b_x", "ang_acc_b_y","ang_acc_b_z"]]
             
         # Aerodynamics features
         # airspeed_mat = self.data_df[
