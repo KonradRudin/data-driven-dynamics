@@ -101,7 +101,7 @@ path_to_folder = '/home/anna/Documents/System Identification/Test'
 valid_vehicle_type = [1,22]
 
 data_selction = False #'interactive'
-config = 'Tools/parametric_model/configs/fixedwing_model_roll.yaml'
+config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll.yaml'
 #config = 'Tools/parametric_model/configs/fixedwing_model.yaml'
 
 mav_type = 22 # FixedWing

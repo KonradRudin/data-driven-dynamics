@@ -71,9 +71,9 @@ def start_model_prediction(config, model_results, log_path, data_selection=False
     #model.compute_residuals()
     model.plot_model_predicitons()
     
-    acc_mat, acc_amt_pred = model.SYSID_get_data_acceleration()
+    #acc_mat, acc_amt_pred = model.SYSID_get_data_acceleration()
 
-    return acc_mat, acc_amt_pred
+    return 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

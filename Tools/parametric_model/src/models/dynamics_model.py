@@ -844,12 +844,12 @@ class DynamicsModel:
 
         linear_model_plots.plot_covariance_mat(self.X, self.coef_name_list)
 
-        if hasattr(self, "aerodynamics_dict"):
-            coef_list = self.optimizer.get_optimization_parameters()
-            coef_dict = dict(zip(self.coef_name_list, coef_list))
-            aerodynamics_plots.plot_liftdrag_curve(
-                self.data_df, coef_dict, self.aerodynamics_dict, self.fisher_metric
-            )
+        # if hasattr(self, "aerodynamics_dict"):
+        #     coef_list = self.optimizer.get_optimization_parameters()
+        #     coef_dict = dict(zip(self.coef_name_list, coef_list))
+        #     aerodynamics_plots.plot_liftdrag_curve(
+        #         self.data_df, coef_dict, self.aerodynamics_dict, self.fisher_metric
+        #     )
         plt.tight_layout()
         plt.show()
 
