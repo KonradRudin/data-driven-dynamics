@@ -736,12 +736,12 @@ class DynamicsModel:
 
         #fig = plt.figure("Residual Visualization")
 
-        model_plots.plot_airspeed_and_AoA(
-            self.data_df[
-                ["V_air_body_x", "V_air_body_y", "V_air_body_z", "angle_of_attack"]
-            ],
-            self.data_df["timestamp"],
-        )
+        # model_plots.plot_airspeed_and_AoA(
+        #     self.data_df[
+        #         ["V_air_body_x", "V_air_body_y", "V_air_body_z", "angle_of_attack"]
+        #     ],
+        #     self.data_df["timestamp"],
+        # )
 
         if self.estimate_forces:
             _, y_forces, _ = self.assemble_regression_matrices(["lin"])
