@@ -96,8 +96,6 @@ def plot_moment_predictions(
 
     column_to_integrate = acc_mat_pred[:, 0]
 
-
-
     fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
     fig.suptitle("Roll model identifier")
     # Roll Acceleration: Measurement vs Prediciton

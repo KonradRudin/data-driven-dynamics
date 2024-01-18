@@ -76,20 +76,16 @@ class LinearWingRollModel:
         :return: regression matrix X for the estimation of rolling moment for a single feature
         """
 
-        #vel_y = np.sqrt(v_airspeed[0] ** 2 + v_airspeed[1]**2 + v_airspeed[2] ** 2)
-        vel_y = v_airspeed
-        const = 0.5 * density_air * (vel_y**2)
-
-        # X_wing_aero_frame = np.zeros((3, 3))
+        const = 0.5 * density_air * (v_airspeed**2)
 
         deflection_al = aileron_input
         deflection_ar = - deflection_al
 
         features = np.array([const * deflection_ar,
                          const * deflection_al,
-                         const * (angular_velocity[0]) / (2 * vel_y)])
+                         const * (angular_velocity[0]) / (2 * v_airspeed)])
 
-        return features #X_wing_aero_frame.flatten()
+        return features 
 
 
     def compute_aero_moment_features(

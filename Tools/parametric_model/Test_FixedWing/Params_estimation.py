@@ -115,7 +115,6 @@ info_dict = {'log_path': None ,
             'extraction': False
             }
 
-#params_estimation(path_to_folder, mav_type, info_dict)
 
 # vehicle_angular_velocity
 #info_dict['log_path'] = '/home/anna/Documents/System_Identification/Test/fixedwing_model.csv'

@@ -82,23 +82,11 @@ class FixedWingRollModel(DynamicsModel):
 
     def prepare_moment_regression_matrices(self):
 
-        # Angular acceleration
-        # moment_mat = np.matmul(
-        #     self.data_df[["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"]].to_numpy(),
-        #     self.moment_of_inertia,
-        # )
-        # self.y_moments = moment_mat.flatten()
-        # self.data_df[
-        #     ["measured_moment_x", "measured_moment_y", "measured_moment_z"]
-        # ] = moment_mat
+        # measured roll rate derivative
         self.data_df[
             ["measured_moment_x", "measured_moment_y", "measured_moment_z"]
         ] = self.data_df[["ang_acc_b_x", "ang_acc_b_y","ang_acc_b_z"]]
             
-        # Aerodynamics features
-        # airspeed_mat = self.data_df[
-        #     ["V_air_body_x", "V_air_body_y", "V_air_body_z"]
-        # ].to_numpy()
 
         # true airspeed in m/s
         true_airspeed = self.data_df['true_airspeed_m_s'].to_numpy()
