@@ -19,14 +19,6 @@ model_config:
     Ixx: 1
     Iyy: 1
     Izz: 1
-  actuators:
-    rotors:
-      # All rotors in the same group will share the coefficients
-      puller_:
-        - rotor:
-          description: "puller rotor"
-          rotor_type: "LinearRotorModel"
-          dataframe_name: "throttle"
 
   aerodynamics:
     type: "LinearWingRollModel"

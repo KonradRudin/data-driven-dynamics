@@ -48,9 +48,21 @@ info_dict['config'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Too
 # info_dict['log_path'] ='/home/anna/Documents/System_Identification/Loong_logs/006/697f5533-4799-48ba-abd6-949f41c956b1.ulg'
 
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/003/2cf1e16e-09cc-48d0-b927-95f4b17f18e4.ulg'
-info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_08_58_selection03.csv'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_08_58_selection03.csv'
 
-info_dict['model_results'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/model_results_estimation_RollModel/simple_fixedwing_model_2024-01-18-09-56-22.yaml'
-start_model_prediction(**(info_dict))
+info_dict['model_results'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/model_results_estimation_RollModel/simple_fixedwing_model_2024-01-18-17-13-12.yaml'
+# start_model_prediction(**(info_dict))
 
+
+path_to_folder = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending'
+
+with os.scandir(path_to_folder) as entries:
+        for entry in entries:
+            print()
+            print(entry.name)
+
+            # file name of log file
+            file_name = os.path.join(path_to_folder, entry.name)
+            info_dict['log_path'] = file_name
+            start_model_prediction(**(info_dict))
 

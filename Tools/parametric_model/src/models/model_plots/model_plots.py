@@ -40,6 +40,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
+from src.tools.dataframe_tools import sav_gol_filter
+
 plt.rcParams["mathtext.fontset"] = "cm"
 
 """The functions in this file can be used to plot data of any kind of model"""
@@ -94,36 +96,14 @@ def plot_moment_predictions(
     acc_mat = stacked_moment_vec.reshape((-1, 3))
     acc_mat_pred = stacked_moment_vec_pred.reshape((-1, 3))
 
-    column_to_integrate = acc_mat_pred[:, 0]
+    roll_rate_dot_pred = acc_mat_pred[:, 0]
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
-    fig.suptitle("Roll model identifier")
-    # Roll Acceleration: Measurement vs Prediciton
-    ax1.plot(timestamp_array, acc_mat[:, 0], label="Measurement: Vehicle_angular_velocity_xyz[0]_derivative")
-    ax1.plot(timestamp_array, acc_mat_pred[:, 0], label="Prediction: Roll Rate Derivative", alpha=0.7)
-    ax1.legend()
+    # apply filter to output data
+    roll_rate_dot_pred_filtered = sav_gol_filter(roll_rate_dot_pred)
 
-    # Roll Rate: Measurement vs Integrated Predicition
-    integrated_result = integrate_cum_trap(column_to_integrate, timestamp_array, roll_rate)
-    t_values, y_values = integration_RK45(column_to_integrate, timestamp_array, roll_rate)
+    #plot_roll_prediciton(timestamp_array, rr_dot_meas = acc_mat[:, 0], rr_dot_pred=roll_rate_dot_pred, rr_meas = roll_rate, title = 'Roll model identifier')
+    plot_roll_prediciton(timestamp_array, rr_dot_meas = acc_mat[:, 0], rr_dot_pred=roll_rate_dot_pred_filtered, rr_meas = roll_rate, title = 'Roll model identifier')
 
-    # Cum_trap
-    ax2.plot(timestamp_array, roll_rate, label="Measurement: Roll Rate (vehicle_angular_velocity_xyz[0])")
-    ax2.plot(timestamp_array[:len(integrated_result)], integrated_result, label="Integrated prediction, Cum_Trap", alpha=0.7)
-    ax2.legend()
-    # RK45
-    ax3.plot(timestamp_array, roll_rate, label="Measurement: Roll Rate (vehicle_angular_velocity_xyz[0])")
-    ax3.plot(t_values, y_values, label="Integrated prediction, RK45", alpha=0.7)
-    ax3.legend()
-
-    ax1.set_ylabel("$p_{dot} [rad/s^2]$")
-    ax1.set_xlabel("time [s]")
-    ax2.set_ylabel("$p [rad/s]$")
-    ax2.set_xlabel("time [s]")
-    ax3.set_ylabel("$p [rad/s]$")
-    ax3.set_xlabel("time [s]")
-    
-    plt.legend()
     plt.show()
     return
 
@@ -274,8 +254,37 @@ def plot(data, timestamp, plt_title="No title"):
     plt.plot(timestamp, data)
     plt.title(plt_title)
 
-   
 
+def plot_roll_prediciton(timestamp_array, rr_dot_meas, rr_dot_pred, rr_meas, title):
+    
+    fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
+    fig.suptitle(title)
+    # Roll Acceleration: Measurement vs Prediciton
+    ax1.plot(timestamp_array, rr_dot_meas, label="Measurement: Vehicle_angular_velocity_xyz[0]_derivative")
+    ax1.plot(timestamp_array, rr_dot_pred, label="Prediction: Roll Rate Derivative", alpha=0.7)
+    ax1.legend()
+
+    # Roll Rate: Measurement vs Integrated Predicition
+    integrated_result = integrate_cum_trap(rr_dot_pred, timestamp_array, rr_meas)
+    t_values, y_values = integration_RK45(rr_dot_pred, timestamp_array, rr_meas)
+
+    # Cum_trap
+    ax2.plot(timestamp_array, rr_meas, label="Measurement: Roll Rate (vehicle_angular_velocity_xyz[0])")
+    ax2.plot(timestamp_array[:len(integrated_result)], integrated_result, label="Integrated prediction, Cum_Trap", alpha=0.7)
+    ax2.legend()
+    # RK45
+    ax3.plot(timestamp_array, rr_meas, label="Measurement: Roll Rate (vehicle_angular_velocity_xyz[0])")
+    ax3.plot(t_values, y_values, label="Integrated prediction, RK45", alpha=0.7)
+    ax3.legend()
+
+    ax1.set_ylabel("$p_{dot} [rad/s^2]$")
+    ax1.set_xlabel("time [s]")
+    ax2.set_ylabel("$p [rad/s]$")
+    ax2.set_xlabel("time [s]")
+    ax3.set_ylabel("$p [rad/s]$")
+    ax3.set_xlabel("time [s]")
+    
+    plt.legend()
 
 
 
@@ -334,6 +343,5 @@ def integration_RK45(roll_acc_func, time, roll_rate):
         y_values.append(solver.y[0])
 
     return t_values, y_values
-
 
 

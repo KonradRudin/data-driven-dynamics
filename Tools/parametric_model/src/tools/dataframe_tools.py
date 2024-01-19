@@ -42,7 +42,8 @@ from src.tools.ulog_tools import pandas_from_topic
 from src.tools.quat_utils import slerp
 from matplotlib import pyplot as plt
 import logging
-from scipy.signal import lfilter
+from scipy.signal import savgol_filter, detrend
+
 
 def compute_flight_time(data_df):
     """
@@ -105,14 +106,27 @@ def compute_flight_time(data_df):
 def moving_average(x, w=7):
     return np.convolve(x, np.ones(w), "valid") / w
 
+def sav_gol_filter(x, window_length = 7, polyorder=3):
+    return savgol_filter(x, window_length, polyorder)
 
-def filter_df(data_df, w=11):
+def filter_df(data_df):
     data_np = data_df.to_numpy()
     column_list = data_df.columns
     new_df = pd.DataFrame()
     for i in range(data_np.shape[1]):
-        new_df[column_list[i]] = moving_average(data_np[:, i])
+        filtered_data = sav_gol_filter(data_np[:, i])
+
+        # don't detrend timestamps
+        if i == 0:
+            new_df[column_list[i]] = sav_gol_filter(data_np[:, i])
+        else:
+            data_detrended = detrend_data(filtered_data)
+            new_df[column_list[i]] = detrend_data(data_detrended)
+
+        #detrend_vs_raw_plotted(column_list[i], data_np[:, i], new_df[column_list[i]], data_np[:, 0])
+
     return new_df
+
 
 def resample_dataframe_list(
     df_list, time_window=None, f_des=100.0, slerp_enabled=False, filter=True
@@ -195,3 +209,34 @@ def crop_df(df, t_start, t_end):
     df = df[df.timestamp >= int(df_start.timestamp.to_numpy())]
     df = df[df.timestamp <= int(df_end.timestamp.to_numpy())]
     return df
+
+def remove_averge(x):
+    return x - x.mean()
+
+def detrend_data(x):
+    return detrend(x)
+
+# ============== Sanity Checks: Plot raw data vs. modified data
+def filtered_vs_raw_plotted(column, raw_data, filtered_data, time):
+    time = time/1000000 #[s]
+    plt.figure(figsize=(10, 5))
+    plt.plot(time[:100], raw_data[:100], label='Raw Data', linestyle='-', marker='o', markersize=1)
+    plt.plot(time[:100], filtered_data[:100], label='Filtered Data', linestyle='-', marker='.', markersize=1, alpha=0.7)
+    plt.title(f'{column} - Raw Data vs Filtered Data')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Value')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+def detrend_vs_raw_plotted(column, raw_data, detrend_data, time):
+    time = time/1000000 #[s]
+    plt.figure(figsize=(10, 5))
+    plt.plot(time[:100], raw_data[:100], label='Raw Data', linestyle='-', marker='o', markersize=1)
+    plt.plot(time[:100], detrend_data[:100], label='Detrended Data', linestyle='-', marker='.', markersize=1, alpha=0.7)
+    plt.title(f'{column} - Raw Data vs Detrended & Filtered Data')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Value')
+    plt.legend()
+    plt.grid(True)
+    plt.show()

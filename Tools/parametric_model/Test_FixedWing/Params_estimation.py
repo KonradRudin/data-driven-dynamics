@@ -130,12 +130,26 @@ info_dict = {'log_path': None ,
 # info_dict['log_path'] ='/home/anna/Documents/System_Identification/Loong_logs/004/Data_selection_of_6daab632/02_360_362.csv'
 
 # SIMULATION DATA
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_01_30.ulg'
-# info_dict['log_path'] = '/home/anna/PX4-Autopilot/build/px4_sitl_default/rootfs/log/2024-01-18/07_06_02.ulg'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_06_02.ulg'
 # info_dict['log_path'] = '/home/anna/PX4-Autopilot/build/px4_sitl_default/rootfs/log/2024-01-18/07_08_58.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/15_06_46.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/08_12_17.ulg'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_47_07.ulg'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_07_48.ulg'
 
-info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_06_02_selection01.csv'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending/15_06_46_selection01.csv'
+info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending/14_47_07_selection01.csv'
 # predict model parameters
 start_model_estimation(**(info_dict))
+
+
+
+# path_to_folder = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending'
+
+# with os.scandir(path_to_folder) as entries:
+#         for entry in entries:
+#             print()
+#             print(entry.name)
+
+#             # file name of log file
+#             file_name = os.path.join(path_to_folder, entry.name)
+#             info_dict['log_path'] = file_name
+#             start_model_estimation(**(info_dict))
