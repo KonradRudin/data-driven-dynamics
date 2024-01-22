@@ -131,12 +131,19 @@ info_dict = {'log_path': None ,
 
 # SIMULATION DATA
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_06_02.ulg'
+
 # info_dict['log_path'] = '/home/anna/PX4-Autopilot/build/px4_sitl_default/rootfs/log/2024-01-18/07_08_58.ulg'
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_47_07.ulg'
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_07_48.ulg'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/13_54_51.ulg'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_43_42.ulg'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/13_57_34.ulg'
+# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_01_30.ulg'
 
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending/15_06_46_selection01.csv'
-info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending/14_47_07_selection01.csv'
+info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_aileron_acutators/13_54_51_selection01.csv'
+
+
 # predict model parameters
 start_model_estimation(**(info_dict))
 

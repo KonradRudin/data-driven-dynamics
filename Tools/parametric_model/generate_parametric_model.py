@@ -106,6 +106,10 @@ def start_model_estimation(
         vehicle_torque_setpoint_topics = data_handler.config_dict["data"]["required_ulog_topics"][
             "vehicle_torque_setpoint"
         ]["dataframe_name"]
+        actuator_servos = data_handler.config_dict["data"]["required_ulog_topics"][
+            "actuator_servos"
+        ]["dataframe_name"]
+        actuator_servos.remove("timestamp")
         vehicle_angular_velocity_topics.remove("timestamp")
         vehicle_angular_velocity_topics.remove("ang_vel_y")
         vehicle_angular_velocity_topics.remove("ang_vel_z")
@@ -116,8 +120,9 @@ def start_model_estimation(
         vehicle_torque_setpoint_topics.remove("rudder")
         visual_dataframe_selector_config_dict = {
             "x_axis_col": "timestamp",
-            "sub_plt1_data": vehicle_torque_setpoint_topics,
+            "sub_plt1_data": actuator_servos,
             "sub_plt2_data": vehicle_angular_velocity_topics,
+            #"sub_plt3_data": actuator_servos,
             "sub_plt3_data": [],
         }
 

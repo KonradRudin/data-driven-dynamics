@@ -60,4 +60,8 @@ def pandas_from_topic(ulog, topic_list, id=0):
             topics_df = curr_df
         else:
             topics_df = pd.concat([topics_df, curr_df], axis=1)
+    
+    # exclude columns which only contain Nan values   
+    topics_df = topics_df.dropna(axis=1, how='all')
+                
     return topics_df.dropna()

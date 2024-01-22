@@ -116,15 +116,5 @@ dynamics_model_config:
         ulog_name:
           - "timestamp"
           - "true_airspeed_m_s"   
-      actuator_servos:
-        ulog_name:
-          - "timestamp"
-          - "control[0]"
-          - "control[1]"
-          - "control[2]"
-        dataframe_name:
-          - "timestamp"
-          - "c0"
-          - "c1"
-          - "c2"
+
 

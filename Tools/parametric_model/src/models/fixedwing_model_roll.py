@@ -44,6 +44,7 @@ from .dynamics_model import DynamicsModel
 from .model_config import ModelConfig
 from matplotlib import pyplot as plt
 from scipy.spatial.transform import Rotation
+from scipy.integrate import odeint, cumtrapz
 
 
 class FixedWingRollModel(DynamicsModel):
@@ -96,7 +97,12 @@ class FixedWingRollModel(DynamicsModel):
         angular_vel_mat = self.data_df[
             ["ang_vel_x", "ang_vel_y", "ang_vel_z"]
         ].to_numpy()
-        aileron_inputs = self.data_df["aileron"].to_numpy()
+        
+        # aileron_inputs = self.data_df["aileron"].to_numpy()
+        aileron_inputs = self.calculate_aileron_deflection()
+
+        # self.plot(self.data_df["aileron"], aileron_inputs_manual, self.data_df["timestamp"])
+        # self.plot(self.data_df["aileron"], aileron_inputs, self.data_df["timestamp"])
 
 
         (
@@ -119,3 +125,58 @@ class FixedWingRollModel(DynamicsModel):
                 }
             }
         )
+
+  
+
+    def deflection_dot(self, timestamp_array, aileron_deflection, aileron_command, aileron_time_constant, t):
+        idx = np.searchsorted(timestamp_array, t) - 1
+        return (aileron_command[idx] - aileron_deflection) / aileron_time_constant
+
+    def calculate_aileron_deflection(self):
+        aileron_deflection = np.array(self.data_df['aileron'])
+        aileron_command = np.array(self.data_df['c0'])
+        aileron_time_constant = 0.01
+
+        # Define the differential equation function
+        def diff_eq(y, t, aileron_time_constant):
+            aileron_deflection = y[0]
+            deflection_dot = self.deflection_dot(timestamp_array, aileron_deflection, aileron_command, aileron_time_constant, t)
+            return [deflection_dot]
+
+        timestamp_array = self.data_df['timestamp'] / 1000000
+
+        # Differential integration using odeint
+        result = odeint(diff_eq, [aileron_deflection[0]], timestamp_array, args=(aileron_time_constant,))
+
+        deflection_result = result[:, 0]  
+        return deflection_result
+    
+
+    
+    def manual_integration(self):        
+        
+        aileron_deflection = self.data_df['aileron']
+        aileron_command = self.data_df['c0']
+        aileron_time_constant = 0.01
+
+        timestamp_array = np.array(self.data_df["timestamp"]) / 1000000
+
+        deflection_dot = (aileron_command - aileron_deflection)/aileron_time_constant
+
+        deflection = (deflection_dot * timestamp_array) + aileron_deflection[0]
+
+        return deflection
+    
+
+    # =========== SANITY Check=========
+    def plot(self, raw_data, detrend_data, time):
+        time = time/1000000 #[s]
+        plt.figure(figsize=(10, 5))
+        plt.plot(time[:100], raw_data[:100], label='Raw Data', linestyle='-', marker='o', markersize=1)
+        plt.plot(time[:100], detrend_data[:100], label='Detrended Data', linestyle='-', marker='.', markersize=1, alpha=0.7)
+        plt.xlabel('Time [s]')
+        plt.ylabel('Value')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+        

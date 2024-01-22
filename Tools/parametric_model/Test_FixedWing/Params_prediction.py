@@ -50,11 +50,11 @@ info_dict['config'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Too
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/003/2cf1e16e-09cc-48d0-b927-95f4b17f18e4.ulg'
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_08_58_selection03.csv'
 
-info_dict['model_results'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/model_results_estimation_RollModel/simple_fixedwing_model_2024-01-18-17-13-12.yaml'
+info_dict['model_results'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/model_results_estimation_RollModel/simple_fixedwing_model_2024-01-22-09-11-49.yaml'
 # start_model_prediction(**(info_dict))
 
 
-path_to_folder = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending'
+path_to_folder = '/home/anna/Documents/System_Identification/Simulation_data/With_aileron_acutators'
 
 with os.scandir(path_to_folder) as entries:
         for entry in entries:
