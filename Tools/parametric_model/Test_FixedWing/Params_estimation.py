@@ -101,8 +101,17 @@ path_to_folder = '/home/anna/Documents/System Identification/Test'
 valid_vehicle_type = [1,22]
 
 data_selction = False #'interactive'
-config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll.yaml'
-#config = 'Tools/parametric_model/configs/fixedwing_model.yaml'
+
+# === Linear Model
+# config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll.yaml'
+# Linear Model with old topic
+# config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll_old.yaml'
+
+# === NonLinear Model
+# config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll _nonlinear.yaml'
+# Nonlinear Model with old uorb topics
+config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll _nonlinear_old_topic.yaml'
+
 
 mav_type = 22 # FixedWing
 
@@ -116,35 +125,11 @@ info_dict = {'log_path': None ,
             }
 
 
-# vehicle_angular_velocity
-#info_dict['log_path'] = '/home/anna/Documents/System_Identification/Test/fixedwing_model.csv'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/004/66f6c1c8-3951-4b77-ab95-22908dfcebfc.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/004/6daab632-47f7-4a01-8b0c-594fed05f5a6.ulg'
 
-# vehicle_angular_acceleration
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/006/b637dc1a-b152-4778-9e9f-c51372437765.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/006/e8912629-ef7c-4461-887d-100b1cb5e75b.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/006/d1201b7e-217d-48ee-b251-4c82a8ba6a66.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/003/ba110627-043f-441c-817a-9897033918fd.ulg'
-
-# info_dict['log_path'] ='/home/anna/Documents/System_Identification/Loong_logs/004/Data_selection_of_6daab632/02_360_362.csv'
-
-# SIMULATION DATA
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_06_02.ulg'
-
-# info_dict['log_path'] = '/home/anna/PX4-Autopilot/build/px4_sitl_default/rootfs/log/2024-01-18/07_08_58.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_47_07.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_07_48.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/13_54_51.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/14_43_42.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/13_57_34.ulg'
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/07_01_30.ulg'
-
-# info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending/15_06_46_selection01.csv'
-info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_aileron_acutators/13_54_51_selection01.csv'
-
-
+# Loong log data
+info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/Log_snippets/006/006_check/same_log_as_estimation/e89126_selection003.csv'
 # predict model parameters
+
 start_model_estimation(**(info_dict))
 
 

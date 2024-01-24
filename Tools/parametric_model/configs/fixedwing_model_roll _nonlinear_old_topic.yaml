@@ -1,7 +1,7 @@
 # general information
 model_name: "Gazebo Standard Plane"
 model_type: "Standard Plane Longitudinal Model"
-model_class: "FixedWingRollModel"
+model_class: "FixedWingRollModel_NonLinear"
 # extractor_class: "FixedWingExtractorModel"
 
 # extractor_config:
@@ -21,7 +21,7 @@ model_config:
     Izz: 1
 
   aerodynamics:
-    type: "LinearWingRollModel"
+    type: "NonLinearWingRollModel"
     area: 0.41
     chord: 0.19
     stall_angle_deg: 20
@@ -29,7 +29,19 @@ model_config:
 
 dynamics_model_config:
   optimizer_config:
-    optimizer_class: "LinearRegressor"
+    optimizer_class: "NonLinearRegressor"
+    optimzation_parameters:
+    parameter_bounds:
+      c_L_al: !!python/tuple [0.0, .inf]
+      c_L_ar: !!python/tuple [-.inf, 0.0]
+      c_L_pv: !!python/tuple [-.inf, .inf]
+      t_d: !!python/tuple [-.inf, .inf]
+    initial_guess:
+      c_L_al: 0.1
+      c_L_ar: -0.1
+      c_L_pv: -1
+      t_d: 0.01
+   
   estimate_forces: False
   estimate_moments: True
   resample_freq: 50.0
@@ -120,7 +132,7 @@ dynamics_model_config:
           - "timestamp"
           - "c0"
           - "c1"
-          - "c2"  
+          - "c2"
       vehicle_angular_acceleration:
         ulog_name:
           - "timestamp"
@@ -132,6 +144,4 @@ dynamics_model_config:
           - "ang_acc_b_x"
           - "ang_acc_b_y"
           - "ang_acc_b_z"
-
-
 

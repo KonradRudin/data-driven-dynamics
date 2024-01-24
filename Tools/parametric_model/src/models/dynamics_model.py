@@ -455,8 +455,8 @@ class DynamicsModel:
 
         with open(file_path, "w") as outfile:
             yaml.dump(self.result_dict, outfile, default_flow_style=False)
-            if not results_only:
-                yaml.dump(self.fisher_metric, outfile, default_flow_style=False)
+            # if not results_only:
+                # yaml.dump(self.fisher_metric, outfile, default_flow_style=False)
         logging.info(
             "-------------------------------------------------------------------------------"
         )

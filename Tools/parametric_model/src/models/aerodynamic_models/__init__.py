@@ -3,3 +3,4 @@ from .phiaerodynamics_model import PhiAerodynamicsModel
 from .control_surface_model import ControlSurfaceModel
 from .linear_wing_model import LinearWingModel
 from .linear_wing_model_roll import LinearWingRollModel
+from .non_linear_wing_model_roll import NonLinearWingRollModel

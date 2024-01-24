@@ -113,8 +113,8 @@ def start_model_estimation(
         vehicle_angular_velocity_topics.remove("timestamp")
         vehicle_angular_velocity_topics.remove("ang_vel_y")
         vehicle_angular_velocity_topics.remove("ang_vel_z")
-        vehicle_angular_velocity_topics.remove("ang_acc_b_y")
-        vehicle_angular_velocity_topics.remove("ang_acc_b_z")
+        # vehicle_angular_velocity_topics.remove("ang_acc_b_y")
+        # vehicle_angular_velocity_topics.remove("ang_acc_b_z")
         vehicle_torque_setpoint_topics.remove("timestamp")
         vehicle_torque_setpoint_topics.remove("elevator")
         vehicle_torque_setpoint_topics.remove("rudder")
@@ -122,8 +122,8 @@ def start_model_estimation(
             "x_axis_col": "timestamp",
             "sub_plt1_data": actuator_servos,
             "sub_plt2_data": vehicle_angular_velocity_topics,
-            #"sub_plt3_data": actuator_servos,
-            "sub_plt3_data": [],
+             "sub_plt3_data": actuator_servos,
+            # "sub_plt3_data": [],
         }
 
         if data_handler.estimate_forces == True:

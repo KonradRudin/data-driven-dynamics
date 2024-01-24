@@ -301,6 +301,7 @@ class DataHandler(object):
         logging.info(
             "==============================================================================="
         )
+        #from vpselector import select_visual_data
         from visual_dataframe_selector.data_selector import select_visual_data
 
         logging.info("Number of data samples before cropping: ", self.data_df.shape[0])
