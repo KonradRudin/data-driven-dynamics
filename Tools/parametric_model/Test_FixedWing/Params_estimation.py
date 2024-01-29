@@ -37,7 +37,7 @@ DATA_SELECTION argument:
     - False (whole section of the log is used)
     - interactive (select data interactively using vpselector)
 """
-info_dict['data_selection']  = 'interactive'
+info_dict['data_selection']  = False #'interactive'
 
 """ 
 CONFIG argument: 
@@ -61,7 +61,7 @@ The Log file contains all data needed for the system identification of the speci
 # LOG-PATH: Estimation of Simulation Data
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/With_aileron_acutators/13_54_51_selection01.csv'
 # LOG-PATH: Estimation of Simulation data - locked aileron
-info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/13_57_34.ulg'
+info_dict['log_path'] = '/home/anna/Documents/System_Identification/Simulation_data/gz_new/With_aileron_acutators/new_gz/13_53_25_selection02.csv'
 # === LOG-PATH: Loong log data
 # info_dict['log_path'] = '/home/anna/Documents/System_Identification/Loong_logs/Log_snippets/006/006_check/same_log_as_estimation/e89126_selection003.csv'
 
@@ -72,7 +72,7 @@ start_model_estimation(**(info_dict))
 
 
 
-# path_to_folder = '/home/anna/Documents/System_Identification/Simulation_data/With_FilteringDetrending'
+# path_to_folder = 'Tools/parametric_model/configs/fixedwing_model_roll_NL__bounds_initials'
 
 # with os.scandir(path_to_folder) as entries:
 #         for entry in entries:
@@ -81,5 +81,5 @@ start_model_estimation(**(info_dict))
 
 #             # file name of log file
 #             file_name = os.path.join(path_to_folder, entry.name)
-#             info_dict['log_path'] = file_name
+#             info_dict['config'] = file_name
 #             start_model_estimation(**(info_dict))

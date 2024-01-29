@@ -57,8 +57,10 @@ from src.tools.quat_utils import quaternion_to_rotation_matrix
 class DataHandler(object):
     visual_dataframe_selector_config_dict = {
         "x_axis_col": "timestamp",
-        "sub_plt1_data": ["q0", "q1", "q2", "q3"],
-        "sub_plt2_data": ["u0", "u1", "u2", "u3"],
+        #"sub_plt1_data": ["q0", "q1", "q2", "q3"],
+        "sub_plt1_data": ["c0", "c1", "c2"],
+        #"sub_plt2_data": ["u0", "u1", "u2", "u3"],
+        "sub_plt2_data": ["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"],
     }
 
     def __init__(self, config_file, selection_var="none"):
@@ -301,10 +303,12 @@ class DataHandler(object):
         logging.info(
             "==============================================================================="
         )
-        #from vpselector import select_visual_data
-        from visual_dataframe_selector.data_selector import select_visual_data
+
+        # from visual_dataframe_selector.data_selector import select_visual_data
+        from vpselector import select_visual_data
 
         logging.info("Number of data samples before cropping: ", self.data_df.shape[0])
+
         self.data_df = select_visual_data(
             self.data_df, self.visual_dataframe_selector_config_dict
         )

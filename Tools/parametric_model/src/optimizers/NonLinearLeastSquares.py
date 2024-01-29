@@ -56,6 +56,9 @@ class NonLinearRegressor(OptimizerBaseTemplate):
         # Bounds for parameters
         bounds = self.bounds()
 
+        print('=== INITIAL', initial_guess)
+        print('=== BOUNDS', bounds)
+
         # Perform non-linear least squares fit
         self.result = least_squares(self._residuals, initial_guess, bounds = bounds,  args=(self.X, self.y))
 

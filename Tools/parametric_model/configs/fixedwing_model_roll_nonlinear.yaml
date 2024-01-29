@@ -35,12 +35,12 @@ dynamics_model_config:
       c_L_al: !!python/tuple [0.0, .inf]
       c_L_ar: !!python/tuple [-.inf, 0.0]
       c_L_pv: !!python/tuple [-.inf, .inf]
-      t_d: !!python/tuple [0, .inf]
+      t_d: !!python/tuple [0, 0.5]
     initial_guess:
       c_L_al: 0.1
       c_L_ar: -0.1
       c_L_pv: -1
-      t_d: 0.01
+      t_d: 0.001
    
   estimate_forces: False
   estimate_moments: True

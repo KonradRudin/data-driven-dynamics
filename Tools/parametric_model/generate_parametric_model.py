@@ -122,8 +122,8 @@ def start_model_estimation(
             "x_axis_col": "timestamp",
             "sub_plt1_data": actuator_servos,
             "sub_plt2_data": vehicle_angular_velocity_topics,
-             "sub_plt3_data": actuator_servos,
-            # "sub_plt3_data": [],
+            #  "sub_plt3_data": actuator_servos,
+            "sub_plt3_data": [],
         }
 
         if data_handler.estimate_forces == True:
