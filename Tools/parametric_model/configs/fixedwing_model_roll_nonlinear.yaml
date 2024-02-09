@@ -22,10 +22,6 @@ model_config:
 
   aerodynamics:
     type: "NonLinearWingRollModel"
-    area: 0.41
-    chord: 0.19
-    stall_angle_deg: 20
-    sig_scale_factor: 30
 
 dynamics_model_config:
   optimizer_config:
