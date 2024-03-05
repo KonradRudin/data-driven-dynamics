@@ -1,0 +1,248 @@
+dynamics_model_config:
+  data:
+    required_ulog_topics:
+      actuator_outputs:
+        actuator_type:
+        - timestamp
+        - motor
+        - motor
+        - motor
+        - motor
+        - motor
+        - motor
+        - motor
+        - motor
+        dataframe_name:
+        - timestamp
+        - u0
+        - u1
+        - u2
+        - u3
+        - u4
+        - u5
+        - u6
+        - u7
+        id: 0
+        ulog_name:
+        - timestamp
+        - output[0]
+        - output[1]
+        - output[2]
+        - output[3]
+        - output[4]
+        - output[5]
+        - output[6]
+        - output[7]
+      sensor_combined:
+        dataframe_name:
+        - timestamp
+        - acc_b_x
+        - acc_b_y
+        - acc_b_z
+        - ang_acc_b_x
+        - ang_acc_b_y
+        - ang_acc_b_z
+        ulog_name:
+        - timestamp
+        - accelerometer_m_s2[0]
+        - accelerometer_m_s2[1]
+        - accelerometer_m_s2[2]
+        - gyro_rad[0]
+        - gyro_rad[1]
+        - gyro_rad[2]
+      vehicle_angular_velocity:
+        dataframe_name:
+        - timestamp
+        - ang_vel_x
+        - ang_vel_y
+        - ang_vel_z
+        ulog_name:
+        - timestamp
+        - xyz[0]
+        - xyz[1]
+        - xyz[2]
+      vehicle_attitude:
+        dataframe_name:
+        - timestamp
+        - q0
+        - q1
+        - q2
+        - q3
+        ulog_name:
+        - timestamp
+        - q[0]
+        - q[1]
+        - q[2]
+        - q[3]
+      vehicle_land_detected:
+        dataframe_name:
+        - timestamp
+        - landed
+        ulog_name:
+        - timestamp
+        - landed
+      vehicle_local_position:
+        ulog_name:
+        - timestamp
+        - vx
+        - vy
+        - vz
+  estimate_angular_acceleration: true
+  estimate_forces: true
+  estimate_moments: true
+  optimizer_config:
+    optimizer_class: QPOptimizer
+    optimzation_parameters: null
+    parameter_bounds:
+      c_d_fuselage_x: !!python/tuple
+      - 0.0
+      - 2.0
+      c_d_fuselage_y: !!python/tuple
+      - 0.0
+      - 2.0
+      c_d_fuselage_z: !!python/tuple
+      - 0.0
+      - 2.0
+      vertical_c_m_drag_z_lin: !!python/tuple
+      - -1.0
+      - 0.0
+      vertical_c_m_drag_z_quad: !!python/tuple
+      - 0.0
+      - 2.0
+      vertical_c_m_leaver_lin: !!python/tuple
+      - -1.0
+      - 0.0
+      vertical_c_m_leaver_quad: !!python/tuple
+      - 0.0
+      - 2.0
+      vertical_c_m_rolling: !!python/tuple
+      - 0.0
+      - 2.0
+      vertical_rot_drag_lin: !!python/tuple
+      - 0.0
+      - 2.0
+      vertical_rot_thrust_lin: !!python/tuple
+      - -5.0
+      - 0.0
+      vertical_rot_thrust_quad: !!python/tuple
+      - 0.0
+      - 50.0
+  resample_freq: 250.0
+extractor_class: Not implemented
+extractor_config: Not implemented
+model_class: MultiRotorModel
+model_config:
+  actuators:
+    rotors:
+      vertical_:
+      - dataframe_name: u0
+        description: 'rotor 0 '
+        position:
+        - 0.4
+        - 0.4
+        - 0.0
+        rotor_0: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: -1
+      - dataframe_name: u1
+        description: rotor 1
+        position:
+        - 0.4
+        - -0.4
+        - 0.0
+        rotor_1: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: 1
+      - dataframe_name: u2
+        description: rotor 2
+        position:
+        - -0.4
+        - -0.4
+        - 0.0
+        rotor_2: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: -1
+      - dataframe_name: u3
+        description: rotor 3
+        position:
+        - -0.4
+        - 0.4
+        - 0.0
+        rotor_3: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: 1
+      - dataframe_name: u4
+        description: rotor 4
+        position:
+        - 0.4
+        - -0.4
+        - 0.0
+        rotor_4: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: -1
+      - dataframe_name: u5
+        description: rotor 5
+        position:
+        - 0.4
+        - 0.4
+        - 0.0
+        rotor_5: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: 1
+      - dataframe_name: u6
+        description: rotor 6
+        position:
+        - -0.4
+        - 0.4
+        - 0.0
+        rotor_6: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: -1
+      - dataframe_name: u7
+        description: rotor 7
+        position:
+        - -0.4
+        - -0.4
+        - 0.0
+        rotor_7: null
+        rotor_axis:
+        - 0
+        - 0
+        - -1
+        rotor_type: RotorModel
+        turning_direction: 1
+  mass: 1.5
+  moment_of_inertia:
+    Ixx: 0.029125
+    Iyy: 0.029125
+    Izz: 0.055225
+model_name: Gazebo Standard Multirotor
+model_type: Standard Multirotor
