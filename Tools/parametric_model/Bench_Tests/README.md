@@ -2,7 +2,7 @@
 
 # How to use it
 
-1. Follow the installation instructions of [data-driven-dynamics](data-driven-dynamics/README.md)
+1. Follow the installation instructions of data-driven-dynamics
 
 2. Run Prediction/DynamicsModel_Processor.py
 
