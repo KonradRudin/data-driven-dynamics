@@ -6,4 +6,4 @@
 
 2. Run Prediction/DynamicsModel_Processor.py
 
-3. If there are airframes which are not yet estimated, run the Estiamtion/Params_estimation.py 
+3. If there are airframes which are not yet estimated, run the Estimation/Params_estimation.py 
