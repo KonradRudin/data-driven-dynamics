@@ -63,7 +63,7 @@ def plot_force_predictions(stacked_force_vec, stacked_force_vec_pred, timestamp_
     acc_mat_pred = stacked_force_vec_pred.reshape((-1, 3))
 
     fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
-    fig.suptitle("Predictions of Forces in Body Frame [N]")
+    fig.suptitle("-Predictions of Forces in Body Frame [N]-")
     ax1.plot(timestamp_array, acc_mat[:, 0], label="measurement")
     ax1.plot(timestamp_array, acc_mat_pred[:, 0], label="prediction")
     ax2.plot(timestamp_array, acc_mat[:, 1], label="measurement")
@@ -80,7 +80,7 @@ def plot_force_predictions(stacked_force_vec, stacked_force_vec_pred, timestamp_
 
 
 def plot_moment_predictions(
-    stacked_moment_vec, stacked_moment_vec_pred, timestamp_array, roll_rate, V_T, air_density, aileron_input
+    stacked_moment_vec, stacked_moment_vec_pred, timestamp_array
 ):
     """
     Input:
@@ -96,15 +96,20 @@ def plot_moment_predictions(
     acc_mat = stacked_moment_vec.reshape((-1, 3))
     acc_mat_pred = stacked_moment_vec_pred.reshape((-1, 3))
 
-    roll_rate_dot_pred = acc_mat_pred[:, 0]
+    # fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
+    # fig.suptitle("Prediction of Moments in Body Frame [Nm]")
+    # ax1.plot(timestamp_array, acc_mat[:, 0], label="measurement")
+    # ax1.plot(timestamp_array, acc_mat_pred[:, 0], label="prediction")
+    # ax2.plot(timestamp_array, acc_mat[:, 1], label="measurement")
+    # ax2.plot(timestamp_array, acc_mat_pred[:, 1], label="prediction")
+    # ax3.plot(timestamp_array, acc_mat[:, 2], label="measurement")
+    # ax3.plot(timestamp_array, acc_mat_pred[:, 2], label="prediction")
 
-    # apply filter to output data
-    roll_rate_dot_pred_filtered = sav_gol_filter(roll_rate_dot_pred)
-
-    #plot_roll_prediciton(timestamp_array, rr_dot_meas = acc_mat[:, 0], rr_dot_pred=roll_rate_dot_pred, rr_meas = roll_rate, title = 'Roll model identifier')
-    plot_roll_prediciton(timestamp_array, rr_dot_meas = acc_mat[:, 0], rr_dot_pred=roll_rate_dot_pred_filtered, rr_meas = roll_rate, title = 'Roll model identifier')
-
-    plt.show()
+    # ax1.set_ylabel("$x$")
+    # ax2.set_ylabel("$y$")
+    # ax3.set_ylabel("$z$")
+    # ax3.set_xlabel("time [s]")
+    # plt.legend()
     return
 
 
@@ -286,7 +291,48 @@ def plot_roll_prediciton(timestamp_array, rr_dot_meas, rr_dot_pred, rr_meas, tit
     
     plt.legend()
 
+def plot_vel_prediciton(timestamp_array, acc_meas, acc_pred, vel_meas, title):
+    
+    fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
+    fig.suptitle(title)
+    # Roll Acceleration: Measurement vs Prediciton
+    ax1.plot(timestamp_array, acc_meas, label="Measurement: vehicle_local_position_ax")
+    ax1.plot(timestamp_array, acc_pred, label="Prediction: x-Acceleration", alpha=0.7)
+    ax1.legend()
 
+    # Roll Rate: Measurement vs Integrated Predicition
+    integrated_result = integrate_cum_trap(acc_pred, timestamp_array, vel_meas)
+    t_values, y_values = integration_RK45(acc_pred, timestamp_array, vel_meas)
+
+    # Cum_trap
+    ax2.plot(timestamp_array, vel_meas, label="Measurement: x-Velocity (vehicle_local_position_vx)")
+    ax2.plot(timestamp_array[:len(integrated_result)], integrated_result, label="Integrated prediction, Cum_Trap", alpha=0.7)
+    ax2.legend()
+    # RK45
+    ax3.plot(timestamp_array, vel_meas, label="Measurement: x-Velocity (vehicle_local_position_vx)")
+    ax3.plot(t_values, y_values, label="Integrated prediction, RK45", alpha=0.7)
+    ax3.legend()
+
+    ax1.set_ylabel("$ acc_x[m/s^2]$")
+    ax1.set_xlabel("time [s]")
+    ax2.set_ylabel("$vel_x [m/s]$")
+    ax2.set_xlabel("time [s]")
+    ax3.set_ylabel("$vel_x [m/s]$")
+    ax3.set_xlabel("time [s]")
+    
+    plt.legend()
+
+def plot_acc_predicition(timestamp_array, acc_meas, acc_pred, title):
+
+    plt.suptitle(title)
+    # Roll Acceleration: Measurement vs Prediciton
+    plt.plot(timestamp_array, acc_meas, label="Measurement: sensor_combined__acc_x")
+    plt.plot(timestamp_array, acc_pred, label="Prediction: x-Acceleration", alpha=0.7)
+
+    # Add labels and title
+    plt.ylabel("$ acc_x[m/s^2]$")
+    plt.xlabel("time [s]")
+    plt.legend()
 
 # ====================== INTEGRATION METHODS =========================================================================================
 from scipy.integrate import cumtrapz
@@ -315,7 +361,6 @@ def manual_integration(roll_acc, time):
         roll_rate.append(current_roll_rate)
 
     return roll_rate
-
 
 from scipy.integrate import RK45
 def integration_RK45(roll_acc_func, time, roll_rate):

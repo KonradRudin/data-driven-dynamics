@@ -106,7 +106,7 @@ class DynamicsModel_Processor:
             self.info_dict['model_results'] = path_model_result_quad +'median_1230200.yaml'
         
         if self.drone_type == 1230010:
-            self.info_dict['config'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/quadrotor_model_1230010 _measured.yaml'
+            self.info_dict['config'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/quadrotor_model_1230010_measured.yaml'
             self.info_dict['model_results'] = path_model_result_quad +'median_1230010_measured_params.yaml'
 
         if self.drone_type == 1300022:
@@ -132,7 +132,7 @@ class DynamicsModel_Processor:
         x_corr, y_corr, z_corr = self.corr_of_acc(acc_mat, acc_mat_pred)
         rmse = self.rmse_between_numpy_arrays(acc_mat, acc_mat_pred)
 
-        if rmse > 6:
+        if rmse > 10:
             return 'Poor Model Performace - No further analysis'
         
         for value in [x_corr, y_corr, z_corr]:
@@ -210,7 +210,7 @@ class DynamicsModel_Processor:
 # ========================================================================================================================================================================================================
 
 
-path_to_folder = '/home/anna/Documents/logs_ulg/flight_log_usb_stick/SysID/Quadrotors/good/Quadrotors_dronetypes/1230010'
+path_to_folder = '/home/anna/Documents/logs_ulg/flight_log_usb_stick/SysID/Quadrotors/good/Quadrotors_dronetypes/1230200'
 valid_vehicle_type = [2,13,14]
 
 def show_nothing():
@@ -244,5 +244,5 @@ with os.scandir(path_to_folder) as entries:
         list_csv.append(sys_id_processor.results_list())
 
 # Specify the CSV file path
-csv_file_path = '/home/anna/Documents/logs_ulg/flight_log_usb_stick/SysID/Quadrotors/Statistics/good/1230010/1230010_measured_params.csv'
+csv_file_path = '/home/anna/Documents/logs_ulg/flight_log_usb_stick/SysID/Quadrotors/Statistics/good/1230010/1230010_measured_params_test.csv'
 save_to_csv(list_csv, csv_file_path)

@@ -58,9 +58,11 @@ class DataHandler(object):
     visual_dataframe_selector_config_dict = {
         "x_axis_col": "timestamp",
         #"sub_plt1_data": ["q0", "q1", "q2", "q3"],
-        "sub_plt1_data": ["c0", "c1", "c2"],
+        "sub_plt1_data": ["c0", "c1", "c2"], #== fixedWing
+        # "sub_plt1_data": ["vx", "vy", "vz"],
         #"sub_plt2_data": ["u0", "u1", "u2", "u3"],
-        "sub_plt2_data": ["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"],
+        "sub_plt2_data": ["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"], #== FixedWing
+        # "sub_plt2_data": ["actuator0", "actuator1"],
     }
 
     def __init__(self, config_file, selection_var="none"):

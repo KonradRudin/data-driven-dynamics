@@ -109,22 +109,30 @@ def moving_average(x, w=7):
 def sav_gol_filter(x, window_length = 7, polyorder=3):
     return savgol_filter(x, window_length, polyorder)
 
-def filter_df(data_df):
+# def filter_df(data_df):
+#     data_np = data_df.to_numpy()
+#     column_list = data_df.columns
+#     new_df = pd.DataFrame()
+#     for i in range(data_np.shape[1]):
+#         filtered_data = sav_gol_filter(data_np[:, i])
+
+#         # don't detrend timestamps
+#         if i == 0:
+#             new_df[column_list[i]] = sav_gol_filter(data_np[:, i])
+#         else:
+#             data_detrended = detrend_data(filtered_data)
+#             new_df[column_list[i]] = detrend_data(data_detrended)
+
+#         #detrend_vs_raw_plotted(column_list[i], data_np[:, i], new_df[column_list[i]], data_np[:, 0])
+
+#     return new_df
+
+def filter_df(data_df, w=11):
     data_np = data_df.to_numpy()
     column_list = data_df.columns
     new_df = pd.DataFrame()
     for i in range(data_np.shape[1]):
-        filtered_data = sav_gol_filter(data_np[:, i])
-
-        # don't detrend timestamps
-        if i == 0:
-            new_df[column_list[i]] = sav_gol_filter(data_np[:, i])
-        else:
-            data_detrended = detrend_data(filtered_data)
-            new_df[column_list[i]] = detrend_data(data_detrended)
-
-        #detrend_vs_raw_plotted(column_list[i], data_np[:, i], new_df[column_list[i]], data_np[:, 0])
-
+        new_df[column_list[i]] = moving_average(data_np[:, i])
     return new_df
 
 

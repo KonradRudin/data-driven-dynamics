@@ -100,27 +100,40 @@ def start_model_estimation(
         #     "sub_plt2_data": actuator_topics,
         #     "sub_plt3_data": [],
         # }
+        # === FixedWing
         vehicle_angular_velocity_topics = data_handler.config_dict["data"]["required_ulog_topics"][
             "vehicle_angular_velocity"
         ]["dataframe_name"]
-        vehicle_torque_setpoint_topics = data_handler.config_dict["data"]["required_ulog_topics"][
-            "vehicle_torque_setpoint"
+        sensor_combined_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+            'sensor_combined'
         ]["dataframe_name"]
+        sensor_combined_topics.remove("timestamp")
         actuator_servos = data_handler.config_dict["data"]["required_ulog_topics"][
             "actuator_servos"
         ]["dataframe_name"]
+
+
+        # === Rover
+        # vehicle_angular_velocity_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+        #     "vehicle_local_position"
+        # ]["ulog_name"]
+        # actuator_servos = data_handler.config_dict["data"]["required_ulog_topics"][
+        #     "actuator_motors"
+        # ]["dataframe_name"]
+
         actuator_servos.remove("timestamp")
         vehicle_angular_velocity_topics.remove("timestamp")
         vehicle_angular_velocity_topics.remove("ang_vel_y")
         vehicle_angular_velocity_topics.remove("ang_vel_z")
-        # vehicle_angular_velocity_topics.remove("ang_acc_b_y")
-        # vehicle_angular_velocity_topics.remove("ang_acc_b_z")
-        vehicle_torque_setpoint_topics.remove("timestamp")
-        vehicle_torque_setpoint_topics.remove("elevator")
-        vehicle_torque_setpoint_topics.remove("rudder")
+        vehicle_angular_velocity_topics.remove("ang_acc_b_y")
+        vehicle_angular_velocity_topics.remove("ang_acc_b_z")
+        # vehicle_torque_setpoint_topics.remove("timestamp")
+        # vehicle_torque_setpoint_topics.remove("elevator")
+        # vehicle_torque_setpoint_topics.remove("rudder")
         visual_dataframe_selector_config_dict = {
             "x_axis_col": "timestamp",
             "sub_plt1_data": actuator_servos,
+            #"sub_plt2_data": sensor_combined_topics,
             "sub_plt2_data": vehicle_angular_velocity_topics,
             #  "sub_plt3_data": actuator_servos,
             "sub_plt3_data": [],
@@ -200,7 +213,7 @@ def start_model_estimation(
     else:
         model.load_dataframes(data_df)
         model.prepare_regression_matrices()
-        model.compute_fisher_information()
+        # model.compute_fisher_information()
 
     model.estimate_model()
 

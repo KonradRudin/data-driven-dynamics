@@ -800,24 +800,26 @@ class DynamicsModel:
             ]
 
             y_moments_pred = np.zeros(y_moments.shape)
-            # y_moments_pred[0::3] = y_pred[
-            #     y_moments.shape[0] : int(4 * y_moments.shape[0] / 3)
-            # ]
-            # y_moments_pred[1::3] = y_pred[
-            #     int(4 * y_moments.shape[0] / 3) : int(5 * y_moments.shape[0] / 3)
-            # ]
-            # y_moments_pred[2::3] = y_pred[int(5 * y_moments.shape[0] / 3) :]
-            y_moments_pred[0::3] = y_pred[0 : int(y_moments.shape[0] / 3)]
+            y_moments_pred[0::3] = y_pred[
+                y_moments.shape[0] : int(4 * y_moments.shape[0] / 3)
+            ]
             y_moments_pred[1::3] = y_pred[
-                int(y_moments.shape[0] / 3) : int(2 * y_moments.shape[0] / 3)
+                int(4 * y_moments.shape[0] / 3) : int(5 * y_moments.shape[0] / 3)
             ]
-            y_moments_pred[2::3] = y_pred[
-                int(2 * y_moments.shape[0] / 3) : y_moments.shape[0]
-            ]
+            y_moments_pred[2::3] = y_pred[int(5 * y_moments.shape[0] / 3) :]
+            # y_moments_pred[0::3] = y_pred[0 : int(y_moments.shape[0] / 3)]
+            # y_moments_pred[1::3] = y_pred[
+            #     int(y_moments.shape[0] / 3) : int(2 * y_moments.shape[0] / 3)
+            # ]
+            # y_moments_pred[2::3] = y_pred[
+            #     int(2 * y_moments.shape[0] / 3) : y_moments.shape[0]
+            # ]
 
             model_plots.plot_moment_predictions(
-                y_moments_measured, y_moments_pred, self.data_df["timestamp"], self.data_df['ang_vel_x'],
-                  self.data_df['true_airspeed_m_s'], self.data_df['rho'], self.data_df['aileron'])
+                y_moments_measured, y_moments_pred, self.data_df["timestamp"])
+
+            
+
             
 
             # ax2 = fig.add_subplot(2, 2, 2, projection="3d")
@@ -842,7 +844,7 @@ class DynamicsModel:
             #     "blue",
             # )
 
-        linear_model_plots.plot_covariance_mat(self.X, self.coef_name_list)
+        # linear_model_plots.plot_covariance_mat(self.X, self.coef_name_list)
 
         # if hasattr(self, "aerodynamics_dict"):
         #     coef_list = self.optimizer.get_optimization_parameters()
@@ -850,8 +852,8 @@ class DynamicsModel:
         #     aerodynamics_plots.plot_liftdrag_curve(
         #         self.data_df, coef_dict, self.aerodynamics_dict, self.fisher_metric
         #     )
-        plt.tight_layout()
-        plt.show()
+        # plt.tight_layout()
+        # plt.show()
 
 
         return

@@ -76,7 +76,7 @@ def params_estimation(path_to_folder, mav_type, info_dict):
             if check_analysis_possible(ulog, px4_ulog, valid_vehicle_type) is False:
                 raise Exception("ULog doesn't meet processing-conditions and won't be analyzed")
             
-            #sys_id_quadrotor(file_name, info_dict)
+            
             # If quadrotor -> process further
             if ulog.initial_parameters['MAV_TYPE'] == mav_type: # and ulog.initial_parameters['SYS_AUTOSTART'] == 1206900:
                 try:
@@ -101,7 +101,7 @@ path_to_folder = '/home/anna/Documents/logs_ulg/flight_log_usb_stick/SysID/Quadr
 valid_vehicle_type = [2,13,14]
 
 data_selction = False
-config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/quadrotor_model_1230010 _measured.yaml'
+config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/quadrotor_model_1230010_measured.yaml'
 
 # mav_type = 14 # Octorotor
 mav_type = 2 # Quadrotor
