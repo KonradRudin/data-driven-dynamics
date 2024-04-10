@@ -4,3 +4,4 @@ from .control_surface_model import ControlSurfaceModel
 from .linear_wing_model import LinearWingModel
 from .linear_wing_model_roll import LinearWingRollModel
 from .non_linear_wing_model_roll import NonLinearWingRollModel
+from .roll_angular_velocity_model import RollAngularVelocityModel

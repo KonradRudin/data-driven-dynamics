@@ -157,7 +157,7 @@ def resample_dataframe_list(
     res_df = pd.DataFrame()
     new_t_list = np.arange(t_start, t_end, T_des)
     for df in df_list:
-        df = filter_df(df)
+        #df = filter_df(df)
         df_end = df["timestamp"].iloc[[-1]].to_numpy()
         if df_end < t_end:
             t_end = int(df_end)

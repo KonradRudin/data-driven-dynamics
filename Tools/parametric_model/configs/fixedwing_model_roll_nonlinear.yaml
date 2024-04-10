@@ -20,6 +20,11 @@ model_config:
     Iyy: 1
     Izz: 1
 
+  area: 0.41
+  chord: 0.19
+  stall_angle_deg: 20
+  sig_scale_factor: 30
+
   aerodynamics:
     type: "NonLinearWingRollModel"
 
@@ -37,7 +42,7 @@ dynamics_model_config:
       c_L_ar: -0.1
       c_L_pv: -1
       t_d: 0.001
-   
+
   estimate_forces: False
   estimate_moments: True
   resample_freq: 50.0
@@ -123,7 +128,7 @@ dynamics_model_config:
       airspeed:
         ulog_name:
           - "timestamp"
-          - "true_airspeed_m_s"   
+          - "true_airspeed_m_s"
       actuator_servos:
         ulog_name:
           - "timestamp"
@@ -135,4 +140,3 @@ dynamics_model_config:
           - "c0"
           - "c1"
           - "c2"
-

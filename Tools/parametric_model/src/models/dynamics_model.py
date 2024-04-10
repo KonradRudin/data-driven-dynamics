@@ -93,10 +93,10 @@ class DynamicsModel:
         self.result_dict = {}
 
     def prepare_regression_matrices(self):
-        if "V_air_body_x" not in self.data_df:
+        #if "V_air_body_x" not in self.data_df:
             # if self.apply_normalization:
                 # self.normalize_actuators()
-            self.compute_airspeed_from_groundspeed(["vx", "vy", "vz"])
+        #    self.compute_airspeed_from_groundspeed(["vx", "vy", "vz"])
 
         # Rotor features
         # angular_vel_mat = self.data_df[
@@ -131,6 +131,7 @@ class DynamicsModel:
         i = 0
         for m in measurements:
             for k in self.y_dict[m].keys():
+                logging.info("Adding measurement data " + self.y_dict[m][k] + " to measurement vector")
                 y[i * self.n_samples : (i + 1) * self.n_samples] = self.data_df[
                     self.y_dict[m][k]
                 ]
@@ -138,18 +139,18 @@ class DynamicsModel:
 
         coef_list = []
 
-        for i in self.coef_dict.keys():
+        for z in self.coef_dict.keys():
             for m in measurements:
-                if m in self.coef_dict[i]:
-                    coef_list.append(i)
+                if m in self.coef_dict[z]:
+                    coef_list.append(z)
                     
-        X = np.zeros((len(measurements) * self.n_samples * 3, len(coef_list)))
+        X = np.zeros((len(measurements) * self.n_samples * i, len(coef_list)))
         for coef_index, coef in enumerate(coef_list):
-            for i_index, i in enumerate(measurements):
-                for j_index, j in enumerate(["x", "y", "z"]):
+            for m_index, m in enumerate(measurements):
+                for j_index, j in enumerate(["x"]):
                     try:
-                        pos = self.n_samples * (i_index * 3 + j_index)
-                        key = self.coef_dict[coef][i][j]
+                        pos = self.n_samples * (m_index * i + j_index)
+                        key = self.coef_dict[coef][m][j]
                         X[pos : pos + self.n_samples, coef_index] = self.data_df[key]
                     except:
                         KeyError
@@ -447,7 +448,7 @@ class DynamicsModel:
     def save_result_dict_to_yaml(
         self,
         file_name="model_parameters",
-        result_path="/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/model_results_estimation_RollModel/",
+        result_path="/home/konrad/Src/data-driven-dynamics/data-driven-dynamics/data/",
         results_only=False,
     ):
         timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -477,7 +478,7 @@ class DynamicsModel:
         logging.info("Initialized dataframe with the following columns: ")
         logging.info(list(self.data_df.columns))
         #self.data_df.to_csv('Processed_data_ddd_test1.csv', index=False)
-        logging.info("Data contains ", self.n_samples, "timestamps.")
+        logging.info("Data contains " + str(self.n_samples) + " timestamps.")
 
     def predict_model(self, opt_coefs_dict):
         logging.info(
@@ -788,18 +789,65 @@ class DynamicsModel:
             # )
 
         if self.estimate_moments:
-            _, y_moments, _ = self.assemble_regression_matrices(["rot"])
+            X, y_meas, _ = self.assemble_regression_matrices(["rot"])
 
-            y_moments_measured = np.zeros(y_moments.shape)
-            y_moments_measured[0::3] = y_moments[0 : int(y_moments.shape[0] / 3)]
-            y_moments_measured[1::3] = y_moments[
-                int(y_moments.shape[0] / 3) : int(2 * y_moments.shape[0] / 3)
-            ]
-            y_moments_measured[2::3] = y_moments[
-                int(2 * y_moments.shape[0] / 3) : y_moments.shape[0]
-            ]
+            time = self.data_df["timestamp"] / 1000000
 
-            y_moments_pred = np.zeros(y_moments.shape)
+            # true airspeed in m/s
+            true_airspeed = self.data_df['true_airspeed_m_s'].to_numpy()
+
+            # air density 
+            density_air = self.data_df['rho'].to_numpy()
+
+            angular_vel_mat = self.data_df[
+                ["ang_vel_x", "ang_vel_y", "ang_vel_z"]
+            ].to_numpy()
+            
+            aileron_inputs = self.data_df[
+                ["c0", "c1"]
+            ].to_numpy()
+
+            fig, (ax, bx) = plt.subplots(2)
+
+            ang_vel = self.data_df["ang_vel_x"]
+
+            (cl, cp, static, inert) = self.optimizer.get_optimization_parameters()
+            ang_vel_pred =  np.zeros(time.shape)
+
+            ang_vel_pred[0] = ang_vel[0]
+
+            for idx in range(1, len(time)):
+                ang_vel_pred[idx] = ang_vel_pred[idx] + (time[idx] - time[idx-1])*(0.5*density_air[idx-1]*(true_airspeed[idx-1]**2)*(cl*(aileron_inputs[idx-1,0] - aileron_inputs[idx-1,1]) - static + cp*angular_vel_mat[idx-1,0]/(2*true_airspeed[idx-1])) - inert*angular_vel_mat[idx-1,1]*angular_vel_mat[idx-1,2])
+
+            ax.plot(time, y_pred, label='predict')
+            ax.plot(time, y_meas, label='meas')
+            ax.legend()
+            ax.set_xlabel('time')
+            ax.set_ylabel('rot acc')
+
+            
+            
+            
+            bx.plot(time, ang_vel, label='meas')
+            bx.plot(time, ang_vel_pred, label='pred')
+
+
+
+            plt.show()
+
+
+
+
+            # y_moments_measured = np.zeros(y_moments.shape)
+            # y_moments_measured[0::3] = y_moments[0 : int(y_moments.shape[0] / 3)]
+            # y_moments_measured[1::3] = y_moments[
+            #     int(y_moments.shape[0] / 3) : int(2 * y_moments.shape[0] / 3)
+            # ]
+            # y_moments_measured[2::3] = y_moments[
+            #     int(2 * y_moments.shape[0] / 3) : y_moments.shape[0]
+            # ]
+
+            # y_moments_pred = np.zeros(y_moments.shape)
             # y_moments_pred[0::3] = y_pred[
             #     y_moments.shape[0] : int(4 * y_moments.shape[0] / 3)
             # ]
@@ -807,17 +855,17 @@ class DynamicsModel:
             #     int(4 * y_moments.shape[0] / 3) : int(5 * y_moments.shape[0] / 3)
             # ]
             # y_moments_pred[2::3] = y_pred[int(5 * y_moments.shape[0] / 3) :]
-            y_moments_pred[0::3] = y_pred[0 : int(y_moments.shape[0] / 3)]
-            y_moments_pred[1::3] = y_pred[
-                int(y_moments.shape[0] / 3) : int(2 * y_moments.shape[0] / 3)
-            ]
-            y_moments_pred[2::3] = y_pred[
-                int(2 * y_moments.shape[0] / 3) : y_moments.shape[0]
-            ]
+            # y_moments_pred[0::3] = y_pred[0 : int(y_moments.shape[0] / 3)]
+            # y_moments_pred[1::3] = y_pred[
+            #     int(y_moments.shape[0] / 3) : int(2 * y_moments.shape[0] / 3)
+            # ]
+            # y_moments_pred[2::3] = y_pred[
+            #     int(2 * y_moments.shape[0] / 3) : y_moments.shape[0]
+            # ]
 
-            model_plots.plot_moment_predictions(
-                y_moments_measured, y_moments_pred, self.data_df["timestamp"], self.data_df['ang_vel_x'],
-                  self.data_df['true_airspeed_m_s'], self.data_df['rho'], self.data_df['aileron'])
+            # model_plots.plot_moment_predictions(
+            #     y_moments_measured, y_moments_pred, self.data_df["timestamp"], self.data_df['ang_vel_x'],
+            #       self.data_df['true_airspeed_m_s'], self.data_df['rho'], self.data_df['c0'], self.data_df['c0'])
             
 
             # ax2 = fig.add_subplot(2, 2, 2, projection="3d")
@@ -842,7 +890,7 @@ class DynamicsModel:
             #     "blue",
             # )
 
-        linear_model_plots.plot_covariance_mat(self.X, self.coef_name_list)
+        #linear_model_plots.plot_covariance_mat(self.X, self.coef_name_list)
 
         # if hasattr(self, "aerodynamics_dict"):
         #     coef_list = self.optimizer.get_optimization_parameters()
@@ -850,8 +898,8 @@ class DynamicsModel:
         #     aerodynamics_plots.plot_liftdrag_curve(
         #         self.data_df, coef_dict, self.aerodynamics_dict, self.fisher_metric
         #     )
-        plt.tight_layout()
-        plt.show()
+        #plt.tight_layout()
+        #plt.show()
 
 
         return

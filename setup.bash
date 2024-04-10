@@ -5,6 +5,8 @@
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+export PX4_ROOT=~/Src/PX4/PX4-Autopilot
+
 export DATA_DRIVEN_DYNAMICS_ROOT=${SCRIPT_DIR}
 
 export GAZEBO_PLUGIN_PATH=$GAZEBO_PLUGIN_PATH:${SCRIPT_DIR}/build

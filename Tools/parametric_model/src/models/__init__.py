@@ -8,3 +8,4 @@ from .model_config import ModelConfig
 from .fixedwing_model import FixedWingModel
 from.fixedwing_model_roll import FixedWingRollModel
 from.fixedwing_model_roll_nonlinear import FixedWingRollModel_NonLinear
+from .fixedwing_model_roll_angular_velocity import FixedWingRollAngularVelModel

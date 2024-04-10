@@ -1,0 +1,75 @@
+# general information
+model_name: "Fixedwing roll angular velocity"
+model_type: "Fixedwing roll angular velocity"
+model_class: "FixedWingRollAngularVelModel"
+extractor_class: "Not implemented"
+
+extractor_config:
+
+# all vectors in FRD body frame if not specified otherwise
+
+# the model configuration is used in the model you choose and can therefore vary in the amounts of topics.
+# Generally it should have the following structure to interface with the standart rotor model and standart aerodynamics model:
+model_config:
+  aerodynamics:
+    type: "RollAngularVelocityModel"
+
+# the data configuration is used in dynamics_model.py to load and arrange the data
+dynamics_model_config:
+  optimizer_config:
+    optimizer_class: "LinearRegressor"
+
+  estimate_forces: False
+  estimate_moments: True
+  resample_freq: 200.0
+  estimate_angular_acceleration: False
+
+  data:
+    required_ulog_topics: # only used when load_from_csv = False
+      vehicle_angular_velocity:
+        ulog_name:
+          - "timestamp"
+          - "xyz[0]"
+          - "xyz[1]"
+          - "xyz[2]"
+          - "xyz_derivative[0]"
+          - "xyz_derivative[1]"
+          - "xyz_derivative[2]"
+        dataframe_name:
+          - "timestamp"
+          - "ang_vel_x"
+          - "ang_vel_y"
+          - "ang_vel_z"
+          - "ang_acc_x"
+          - "ang_acc_y"
+          - "ang_acc_z"
+      vehicle_air_data:
+        ulog_name:
+          - "timestamp"
+          - "rho"
+      airspeed_validated:
+        ulog_name:
+          - "timestamp"
+          - "true_airspeed_m_s"
+      actuator_servos:
+        ulog_name:
+          - "timestamp"
+          - "control[0]"
+          - "control[1]"
+        dataframe_name:
+          - "timestamp"
+          - "c0"
+          - "c1"
+      vehicle_attitude:
+        ulog_name:
+          - "timestamp"
+          - "q[0]"
+          - "q[1]"
+          - "q[2]"
+          - "q[3]"
+        dataframe_name:
+          - "timestamp"
+          - "q0"
+          - "q1"
+          - "q2"
+          - "q3"

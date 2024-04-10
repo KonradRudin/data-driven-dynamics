@@ -7,13 +7,9 @@ from scipy.spatial.transform import Rotation
 from progress.bar import Bar
 
 
-class NonLinearWingRollModel:
+class RollAngularVelocityModel:
     def __init__(self, config_dict):
-        self.air_density = 1.225
-        self.gravity = 9.81
-        #self.area = config_dict["area"]
-        #self.chord = config_dict["chord"]
-
+        pass
 
     def compute_wing_moment_features(
         self,
@@ -25,13 +21,13 @@ class NonLinearWingRollModel:
         """
         Model description:
 
-        Compute Rolling moment
+        Compute Rolling acceleration
 
         Rolling moment is modeled as a linear function
-        M_Roll = 0.5 * density * V_air_y^2  * (c_L_al + c_L_ar + c_L_pv* damping_feature)
+        v_Roll_dot = 0.5 * density * V_air_y^2  * (c_L*(ail_left - ail_right) - static + c_L_pv* damping_feature) - inert*ang_vel(1)*ang_vel(2)
 
         Coefficients for optimization:
-        c_L_al, c_L_ar, c_L_pv
+        c_L, c_p, ail_static, inert
 
         :param v_airspeed: airspeed in m/s
         :param ailerons_input: ailerons input
@@ -43,12 +39,12 @@ class NonLinearWingRollModel:
         const = 0.5 * density_air * (v_airspeed**2)
 
         deflection_al = aileron_input
-        deflection_ar = - deflection_al
+        
 
-        features = np.array([const * deflection_ar,
-                         const * deflection_al,
+        features = np.array([const * (aileron_input[1] - aileron_input[0]),
                          const * (angular_velocity[0]) / (2 * v_airspeed),
-                         1])
+                         -const,
+                         +angular_velocity[1]*angular_velocity[2]])
 
         return features 
 
@@ -76,15 +72,15 @@ class NonLinearWingRollModel:
         print("Starting computation of aero moment features...")
         X_aero = self.compute_wing_moment_features(
             v_airspeed_vec[0],
-            aileron_input_vec[0],
+            aileron_input_vec[0, :],
             angular_vel_mat[0, :],
             density_air_vec[0]
             )
         aero_features_bar = Bar("Feature Computation", max=v_airspeed_vec.shape[0])
-        for i in range(1, len(aileron_input_vec)):
+        for i in range(1, len(v_airspeed_vec)):
             X_curr = self.compute_wing_moment_features(
                 v_airspeed_vec[i],
-                aileron_input_vec[i],
+                aileron_input_vec[i, :],
                 angular_vel_mat[i, :],
                 density_air_vec[i]
                 )
@@ -93,16 +89,16 @@ class NonLinearWingRollModel:
         aero_features_bar.finish()
 
         coef_dict = {
-            "c_L_al": {"rot": {"x": "c_L_al_x"}},
-            "c_L_ar": {"rot": {"x": "c_L_ar_x"}},
-            "c_L_pv": {"rot": {"x": "c_L_pv_x"}},
-            "t_d": {"rot": {"x": "t_d_x"}},
+            "c_L": {"rot": {"x": "c_L"}},
+            "c_p": {"rot": {"x": "c_p"}},
+            "ail_static": {"rot": {"x": "ail_static"}},
+            "inert": {"rot": {"x": "inert"}},
         }
         col_names = [
-            "c_L_al_x",
-            "c_L_ar_x",
-            "c_L_pv_x",
-            "t_d_x",
+            "c_L",
+            "c_p",
+            "ail_static",
+            "inert",
         ]
 
         return X_aero, coef_dict, col_names

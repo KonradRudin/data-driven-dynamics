@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import shutil
 
 import sys
-sys.path.append('/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model')
+sys.path.append('/home/konrad/Src/data-driven-dynamics/data-driven-dynamics/Tools/parametric_model')
 
 from generate_parametric_model import *
 
@@ -37,7 +37,7 @@ DATA_SELECTION argument:
     - False (whole section of the log is used)
     - interactive (select data interactively using vpselector)
 """
-info_dict['data_selection']  = False #'interactive'
+info_dict['data_selection']  = 'interactive'
 
 """ 
 CONFIG argument: 
@@ -51,7 +51,7 @@ CONFIG argument:
 # CONFIG: L, old
 # config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll_old.yaml'
 # CONFIG: NL, new
-info_dict['config'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll_nonlinear.yaml'
+info_dict['config'] = '/home/konrad/Src/data-driven-dynamics/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll_velocity.yaml'
 # CONFIG: NL, old
 # config = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Tools/parametric_model/configs/fixedwing_model_roll _nonlinear_old_topic.yaml'
 
@@ -59,7 +59,7 @@ info_dict['config'] = '/home/anna/Workspaces/ddd_ws/src/data-driven-dynamics/Too
 The Log file contains all data needed for the system identification of the specified model as defined in its config file
 """
 
-info_dict['log_path'] = '/home/anna/Documents/System_Identification/Examples_log_files_roll_model/Simulation_gz_standard_vtol/13_53_25_selection02.csv'
+info_dict['log_path'] = '/home/konrad/Src/data-driven-dynamics/data-driven-dynamics/data/b193e4e1-922d-4394-900b-fed194fccfef.ulg'
 
 # ==============================================================================================================================================
 

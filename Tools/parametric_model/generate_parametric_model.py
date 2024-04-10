@@ -48,6 +48,94 @@ import logging
 
 from sklearn.preprocessing import MinMaxScaler
 
+def start_model_load_data(
+    config,
+    log_path,
+    data_selection="none",
+    selection_var="none",
+    plot=False,
+    normalization=True,
+    extraction=False,    
+):
+     # Flag for enabling automatic data selection.
+    data_handler = DataHandler(config, selection_var)
+    data_handler.loadLogs(log_path)
+    data_df = data_handler.get_dataframes()
+    
+    # Normalize each column in the DataFrame
+    # scaler = MinMaxScaler()
+    # data_df = pd.DataFrame(scaler.fit_transform(data_df), columns=data_df.columns)
+
+    # Interactive data selection
+    if data_selection == "interactive":
+        print("Interactive data selection enabled...")
+        import vpselector
+        
+        #model.prepare_regression_matrices()
+        #model.compute_fisher_information()
+        # Parse actuator topics, and remove the timestamp from it
+        # actuator_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+        #     "actuator_outputs"
+        # ]["dataframe_name"]
+        # actuator_topics.remove("timestamp")
+
+        # visual_dataframe_selector_config_dict = {
+        #     "x_axis_col": "timestamp",
+        #     "sub_plt1_data": ["q0", "q1", "q2", "q3"],
+        #     "sub_plt2_data": actuator_topics,
+        #     "sub_plt3_data": [],
+        # }
+        vehicle_angular_velocity_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+            "vehicle_angular_velocity"
+        ]["dataframe_name"]
+        #vehicle_torque_setpoint_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+        #    "vehicle_torque_setpoint"
+        #]["dataframe_name"]
+        actuator_servos = data_handler.config_dict["data"]["required_ulog_topics"][
+            "actuator_servos"
+        ]["dataframe_name"]
+        actuator_servos.remove("timestamp")
+        vehicle_angular_velocity_topics.remove("timestamp")
+        vehicle_angular_velocity_topics.remove("ang_vel_y")
+        vehicle_angular_velocity_topics.remove("ang_vel_z")
+        # vehicle_angular_velocity_topics.remove("ang_acc_b_y")
+        # vehicle_angular_velocity_topics.remove("ang_acc_b_z")
+        #vehicle_torque_setpoint_topics.remove("timestamp")
+        #vehicle_torque_setpoint_topics.remove("elevator")
+        #vehicle_torque_setpoint_topics.remove("rudder")
+        visual_dataframe_selector_config_dict = {
+            "x_axis_col": "timestamp",
+            "sub_plt1_data": actuator_servos,
+            "sub_plt2_data": vehicle_angular_velocity_topics,
+            #  "sub_plt3_data": actuator_servos,
+            #"sub_plt3_data": [],
+        }
+
+        if data_handler.estimate_forces == True:
+            visual_dataframe_selector_config_dict["sub_plt3_data"].append(
+                "fisher_information_force"
+            )
+
+        #if data_handler.estimate_moments == True:
+        #    visual_dataframe_selector_config_dict["sub_plt3_data"].append(
+        #        "fisher_information_rot"
+        #    )
+
+        data_df = vpselector.select_visual_data(
+                data_df, visual_dataframe_selector_config_dict
+            )
+        
+        print("Interactive data selection completed.")
+
+        #model.prepare_regression_matrices()
+        #model.compute_fisher_information()
+
+
+    else:
+        pass
+    
+    return data_df
+
 def start_model_estimation(
     config,
     log_path,
@@ -86,8 +174,8 @@ def start_model_estimation(
         import vpselector
 
         model.load_dataframes(data_df)
-        model.prepare_regression_matrices()
-        model.compute_fisher_information()
+        #model.prepare_regression_matrices()
+        #model.compute_fisher_information()
         # Parse actuator topics, and remove the timestamp from it
         # actuator_topics = data_handler.config_dict["data"]["required_ulog_topics"][
         #     "actuator_outputs"
@@ -103,9 +191,9 @@ def start_model_estimation(
         vehicle_angular_velocity_topics = data_handler.config_dict["data"]["required_ulog_topics"][
             "vehicle_angular_velocity"
         ]["dataframe_name"]
-        vehicle_torque_setpoint_topics = data_handler.config_dict["data"]["required_ulog_topics"][
-            "vehicle_torque_setpoint"
-        ]["dataframe_name"]
+        #vehicle_torque_setpoint_topics = data_handler.config_dict["data"]["required_ulog_topics"][
+        #    "vehicle_torque_setpoint"
+        #]["dataframe_name"]
         actuator_servos = data_handler.config_dict["data"]["required_ulog_topics"][
             "actuator_servos"
         ]["dataframe_name"]
@@ -115,15 +203,15 @@ def start_model_estimation(
         vehicle_angular_velocity_topics.remove("ang_vel_z")
         # vehicle_angular_velocity_topics.remove("ang_acc_b_y")
         # vehicle_angular_velocity_topics.remove("ang_acc_b_z")
-        vehicle_torque_setpoint_topics.remove("timestamp")
-        vehicle_torque_setpoint_topics.remove("elevator")
-        vehicle_torque_setpoint_topics.remove("rudder")
+        #vehicle_torque_setpoint_topics.remove("timestamp")
+        #vehicle_torque_setpoint_topics.remove("elevator")
+        #vehicle_torque_setpoint_topics.remove("rudder")
         visual_dataframe_selector_config_dict = {
             "x_axis_col": "timestamp",
             "sub_plt1_data": actuator_servos,
             "sub_plt2_data": vehicle_angular_velocity_topics,
             #  "sub_plt3_data": actuator_servos,
-            "sub_plt3_data": [],
+            #"sub_plt3_data": [],
         }
 
         if data_handler.estimate_forces == True:
@@ -131,10 +219,10 @@ def start_model_estimation(
                 "fisher_information_force"
             )
 
-        if data_handler.estimate_moments == True:
-            visual_dataframe_selector_config_dict["sub_plt3_data"].append(
-                "fisher_information_rot"
-            )
+        #if data_handler.estimate_moments == True:
+        #    visual_dataframe_selector_config_dict["sub_plt3_data"].append(
+        #        "fisher_information_rot"
+        #    )
 
         model.load_dataframes(
             vpselector.select_visual_data(
@@ -143,8 +231,8 @@ def start_model_estimation(
         )
         print("Interactive data selection completed.")
 
-        model.prepare_regression_matrices()
-        model.compute_fisher_information()
+        #model.prepare_regression_matrices()
+        #model.compute_fisher_information()
 
     # Setpoint based data selection
     elif data_selection == "setpoint":
@@ -176,7 +264,7 @@ def start_model_estimation(
         model.load_dataframes(acc_df)
         print("Setpoint based data selection completed.")
 
-        model.prepare_regression_matrices()
+        #model.prepare_regression_matrices()
         model.compute_fisher_information()
 
     elif data_selection == "auto":  # Automatic data selection (WIP)
@@ -194,15 +282,18 @@ def start_model_estimation(
         model.load_dataframes(data_selector.select_dataframes(10))
         print("Automatic data selection completed.")
 
-        model.prepare_regression_matrices()
+        #model.prepare_regression_matrices()
         model.compute_fisher_information()
 
     else:
         model.load_dataframes(data_df)
-        model.prepare_regression_matrices()
+        #model.prepare_regression_matrices()
         model.compute_fisher_information()
 
+    model.prepare_regression_matrices()
+    model.plot_input()
     model.estimate_model()
+    
 
     if extraction:
         try:

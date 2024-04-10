@@ -80,7 +80,7 @@ def plot_force_predictions(stacked_force_vec, stacked_force_vec_pred, timestamp_
 
 
 def plot_moment_predictions(
-    stacked_moment_vec, stacked_moment_vec_pred, timestamp_array, roll_rate, V_T, air_density, aileron_input
+    stacked_moment_vec, stacked_moment_vec_pred, timestamp_array, roll_rate, V_T, air_density, aileron_left, aileron_right
 ):
     """
     Input:

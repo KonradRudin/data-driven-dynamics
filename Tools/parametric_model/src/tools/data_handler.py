@@ -60,7 +60,7 @@ class DataHandler(object):
         #"sub_plt1_data": ["q0", "q1", "q2", "q3"],
         "sub_plt1_data": ["c0", "c1", "c2"],
         #"sub_plt2_data": ["u0", "u1", "u2", "u3"],
-        "sub_plt2_data": ["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"],
+        #"sub_plt2_data": ["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"],
     }
 
     def __init__(self, config_file, selection_var="none"):
@@ -83,7 +83,7 @@ class DataHandler(object):
         self.estimate_angular_acceleration = config_dict[
             "estimate_angular_acceleration"
         ]
-        logging.info("Resample frequency: ", self.resample_freq, "Hz")
+        logging.info("Resample frequency: " + str(self.resample_freq) + " Hz")
         self.req_topics_dict = config_dict["data"]["required_ulog_topics"]
         if selection_var != "none":
             split = selection_var.split("/")
@@ -159,7 +159,7 @@ class DataHandler(object):
             return True
 
         elif rel_data_path.endswith(".ulg"):
-            logging.info("Loading uLog file: ", rel_data_path)
+            logging.info("Loading uLog file: " + rel_data_path)
             ulog = load_ulog(rel_data_path)
             logging.info("Loading topics:")
             for req_topic in self.req_topics_dict:
@@ -210,7 +210,7 @@ class DataHandler(object):
         return
 
     def compute_resampled_dataframe(self, ulog, fts):
-        logging.info("Starting data resampling of topic types: ", self.req_topics_dict.keys())
+        logging.info("Starting data resampling of topic types: " + str(self.req_topics_dict.keys()))
         # setup object to crop dataframes for flight data
         df_list = []
         # topic_type_bar = Bar("Resampling", max=len(self.req_topics_dict.keys()))
@@ -260,6 +260,7 @@ class DataHandler(object):
 
         if isinstance(fts, list):
             resampled_df = []
+            self.raw_df_list = df_list
             for ft in fts:
                 new_resampled_df = resample_dataframe_list(
                     df_list, ft, self.resample_freq
@@ -269,27 +270,27 @@ class DataHandler(object):
         else:
             resampled_df = resample_dataframe_list(df_list, fts, self.resample_freq)
 
-        if self.estimate_angular_acceleration:
-            ang_vel_mat = resampled_df[
-                ["ang_vel_x", "ang_vel_y", "ang_vel_z"]
-            ].to_numpy()
-            for i in range(3):
-                ang_vel_mat[:, i] = (
-                    np.convolve(ang_vel_mat[:, i], np.ones(33), mode="same") / 33
-                )
+        # if self.estimate_angular_acceleration:
+        #     ang_vel_mat = resampled_df[
+        #         ["ang_vel_x", "ang_vel_y", "ang_vel_z"]
+        #     ].to_numpy()
+        #     for i in range(3):
+        #         ang_vel_mat[:, i] = (
+        #             np.convolve(ang_vel_mat[:, i], np.ones(33), mode="same") / 33
+        #         )
 
-            # Alternate forward differentiation version
-            # ang_vel_mat_1 = np.roll(ang_vel_mat, -1, axis=0)
-            # diff_angular_acc_mat = (
-            #     ang_vel_mat_1 - ang_vel_mat) * self.resample_freq
-            # resampled_df[["ang_acc_b_x", "ang_acc_b_y",
-            #               "ang_acc_b_z"]] = diff_angular_acc_mat
+        #     # Alternate forward differentiation version
+        #     # ang_vel_mat_1 = np.roll(ang_vel_mat, -1, axis=0)
+        #     # diff_angular_acc_mat = (
+        #     #     ang_vel_mat_1 - ang_vel_mat) * self.resample_freq
+        #     # resampled_df[["ang_acc_b_x", "ang_acc_b_y",
+        #     #               "ang_acc_b_z"]] = diff_angular_acc_mat
 
-            time_in_secods_np = resampled_df[["timestamp"]].to_numpy() / 1000000
-            time_in_secods_np = time_in_secods_np.flatten()
-            ang_acc_np = np.gradient(ang_vel_mat, time_in_secods_np, axis=0)
-            # topic_type_bar.next()
-            resampled_df[["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"]] = ang_acc_np
+        #     time_in_secods_np = resampled_df[["timestamp"]].to_numpy() / 1000000
+        #     time_in_secods_np = time_in_secods_np.flatten()
+        #     ang_acc_np = np.gradient(ang_vel_mat, time_in_secods_np, axis=0)
+        #     # topic_type_bar.next()
+        #     resampled_df[["ang_acc_b_x", "ang_acc_b_y", "ang_acc_b_z"]] = ang_acc_np
 
         return resampled_df.dropna()
 
